@@ -12,6 +12,7 @@
 #include <commons/log.h>
 #include <commons/string.h>
 #include <commons/config.h>
+#include <string.h>
 
 int iniciar_servidor(t_log *, char *);
 int crear_conexion(char *, char *);
