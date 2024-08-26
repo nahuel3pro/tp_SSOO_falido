@@ -39,13 +39,13 @@ t_config *levantar_config(char *path, char *module)
     return nuevo_config;
 }
 
-t_log *levantar_log(char *path, char *module, int log_level)
+t_log *levantar_log(char *path, char *module, char* log_level)
 {
     t_log *nuevo_logger;
     char *file_format = ".log";
     char *file_dirr = concatenate_route(path, module, file_format);
 
-    if ((nuevo_logger = log_create(file_dirr, module, 1, log_level)) == NULL)
+    if ((nuevo_logger = log_create(file_dirr, module, 1, log_level_from_string(log_level))) == NULL)
     {
         printf("Fallo al inicializar el logger!");
         exit(1);

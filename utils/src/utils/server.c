@@ -3,8 +3,8 @@
 int iniciar_servidor(t_log *logger, char *puerto_escucha)
 {
     int socket_servidor;
-
-    struct addrinfo hints, *servinfo, *p; // Para qué se usa p?
+    // sockaddr_in = addrinfo
+    struct addrinfo hints, *servinfo, *p; // Para qué se usa *p?
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -32,6 +32,20 @@ int iniciar_servidor(t_log *logger, char *puerto_escucha)
     return socket_servidor;
 }
 
+int esperar_cliente(t_log *logger, int server_fd)
+{
+    // Aceptamos un nuevo cliente
+    int socket_cliente = accept(server_fd, NULL, NULL);
+
+    if (socket_cliente == -1)
+    {
+        log_error(logger, "Error al conectar un cliente!");
+    }
+    log_info(logger, "Se conecto un cliente!");
+
+    return socket_cliente;
+}
+
 int crear_conexion(char *ip, char *puerto)
 {
     struct addrinfo hints;
@@ -50,7 +64,7 @@ int crear_conexion(char *ip, char *puerto)
                             server_info->ai_socktype,
                             server_info->ai_protocol);
 
-    // Ahora que tenemos el socket, vamos a conectarlo - connect()
+    // Ahora que tenemos el socket, vamos a conectarlo
     connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
 
     freeaddrinfo(server_info);

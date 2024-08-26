@@ -15,6 +15,6 @@
 void saludar(char *quien);
 char *concatenate_route(char *path, char *module, char *file_format);
 t_config *levantar_config(char *path, char *module);
-t_log *levantar_log(char *path, char *module, int log_level);
+t_log *levantar_log(char *path, char *module, char *level);
 
 #endif

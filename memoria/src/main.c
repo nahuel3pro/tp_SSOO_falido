@@ -2,16 +2,18 @@
 
 int main(int argc, char *argv[])
 {
-    t_config *config;
-    t_log *log;
-
+    t_config *config = NULL;
+    t_log *log = NULL;
+    int server_fd = 0;
+    int cliente_fd = 0;
+    
     config = levantar_config(getcwd(NULL, 0), "memoria");
-    log = levantar_log(getcwd(NULL, 0), "memoria", config_get_int_value(config, "LOG_LEVEL"));
+    log = levantar_log(getcwd(NULL, 0), "memoria", config_get_string_value(config, "LOG_LEVEL"));
 
-    readline("> ");
+    server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA"));
+    cliente_fd = esperar_cliente(log, server_fd);
 
-    log_destroy(log);
-    config_destroy(config);
-    saludar("memoria");
-    return 0;
+    //readline("> ");
+
+    return EXIT_SUCCESS;
 }
