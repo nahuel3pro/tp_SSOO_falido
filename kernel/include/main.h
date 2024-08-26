@@ -1,10 +1,10 @@
-#ifndef MAIN_H_
-#define MAIN_H_
+#ifndef H_MAIN_H_
+#define H_MAIN_H_
 
 #include <unistd.h>
 #include <../include/server.h>
-#include <../include/hello.h>
 #include <../include/protocolo.h>
+#include <../include/hello.h>
 #include <readline/readline.h>
 
 #endif

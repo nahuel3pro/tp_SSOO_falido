@@ -12,7 +12,9 @@
 #include <commons/log.h>
 #include <commons/string.h>
 #include <commons/config.h>
+#include <commons/error.h>
 #include <string.h>
+#include<errno.h>
 
 int iniciar_servidor(t_log * logger, char * puerto);
 int esperar_cliente(t_log*, int server_fd);
