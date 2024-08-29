@@ -10,7 +10,7 @@ int main(int argc, char *argv[])
 
     // Conectarse a memoria
     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-    send_handshake(log,socket_cliente, "Kernel/Memoria"); // Estaría bueno que sepa el server quién se conectó.
+    send_handshake(log,socket_cliente, "Kernel/Memoria", KERNEL); // Estaría bueno que sepa el server quién se conectó.
     readline("> ");
 
     return 0;
