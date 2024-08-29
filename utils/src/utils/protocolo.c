@@ -4,7 +4,6 @@ bool send_handshake(t_log *logger, int fd_connection, const char *connection_nam
 {
     size_t bytes;
     int32_t result = 0;
-
     bytes = send(fd_connection, &module, sizeof(int), 0);
     bytes = recv(fd_connection, &result, sizeof(int32_t), MSG_WAITALL);
 
@@ -17,7 +16,7 @@ bool send_handshake(t_log *logger, int fd_connection, const char *connection_nam
     {
         log_error(logger, "Handshake ERROR, no te conozco");
         close(fd_connection);
-        return ;
+        return false;
     }
 }
 

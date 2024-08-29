@@ -7,9 +7,9 @@ int recv_handshake_memoria(t_log *log,int server_fd){
     int module;
     int32_t resultOk = 1;
     int32_t resultError = -1;
-
-    bytes = recv(server_fd, &module, sizeof(int32_t), MSG_WAITALL);
-    if (module == (KERNEL || CPU))
+    bytes = recv(server_fd, &module, sizeof(int), MSG_WAITALL);
+    log_info(log, "Parámetro recibido: %d", module);
+    if (module == KERNEL || module == CPU)
     {
         bytes = send(server_fd, &resultOk, sizeof(int32_t), 0);
         log_info(log, "Buenas tardes, caballero.");

@@ -3,7 +3,7 @@
 
 #include "../include/protocolo.h"
 
-int recv_handshake_memoria(log, client_fd);
+int recv_handshake_memoria(t_log* log, int server_fd);
 
 #endif
 
