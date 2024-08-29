@@ -16,7 +16,7 @@ int main(int argc, char *argv[])
 
     while (1)
     {
-        int client_fd = esperar_cliente(log, server_fd);
+        client_fd = esperar_cliente(log, server_fd);
         recv_handshake(log, client_fd);
     }
 

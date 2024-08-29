@@ -42,3 +42,13 @@ bool recv_handshake(t_log *log, int server_fd)
     }
     return true;
 }
+
+t_buffer *buffer_create(void)
+{
+    // Creo y seteo las variables del buffer
+    t_buffer *buffer = malloc(sizeof(t_buffer));
+    buffer->size = 0;
+    buffer->stream = NULL;
+
+    return buffer;
+}

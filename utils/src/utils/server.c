@@ -20,7 +20,7 @@ int iniciar_servidor(t_log *logger, char *puerto_escucha)
                                   servinfo->ai_socktype,
                                   servinfo->ai_protocol)) == -1)
     {
-        error_show("Error creando el servidor", errno);
+        error_show("Error creando el servidor");
         abort();
     };
     // int err = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
@@ -29,7 +29,7 @@ int iniciar_servidor(t_log *logger, char *puerto_escucha)
     // Asociamos el socket a un puerto
     if (bind(socket_servidor, servinfo->ai_addr, servinfo->ai_addrlen) == -1)
     {
-        error_show("Error al bindear servidor", errno);
+        error_show("Error al bindear servidor");
         abort();
     };
 
