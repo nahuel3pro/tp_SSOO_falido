@@ -3,6 +3,7 @@
 int iniciar_servidor(t_log *logger, char *puerto_escucha)
 {
     int err;
+    int yes = 1;
     int socket_servidor;
     // sockaddr_in = addrinfo
     struct addrinfo hints, *servinfo, *p; // Para qué se usa *p?
@@ -24,6 +25,11 @@ int iniciar_servidor(t_log *logger, char *puerto_escucha)
         abort();
     };
     // int err = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
+    if (setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+    {
+        error_show("Setsockopt error");
+        abort();
+    }
     /* Esta linea la usaremos más tarde */
 
     // Asociamos el socket a un puerto
@@ -51,6 +57,7 @@ int esperar_cliente(t_log *logger, int server_fd)
     if (socket_cliente == -1)
     {
         log_error(logger, "Error al conectar un cliente!");
+        return socket_cliente;
     }
     log_info(logger, "Se conectó un cliente");
 

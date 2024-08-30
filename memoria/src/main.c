@@ -13,9 +13,8 @@ int main(int argc, char *argv[])
     // Memoria como sv
     server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA"));
 
-    while (1)
+    while ((client_fd = esperar_cliente(log, server_fd)) != -1)
     {
-        client_fd = esperar_cliente(log, server_fd);
         switch (recv_handshake_memoria(log, client_fd))
         {
         case KERNEL:
