@@ -92,12 +92,10 @@ int crear_conexion(char *ip, char *puerto)
 
 void atender_cliente(t_log *log, int client_fd, void (*func)(void))
 {
-    log_info(log, "Se conectó el kernel");
     pthread_t hilo;
     t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
     args->log = log;
     args->fd = client_fd;
-    args->server_name = "Kernel/Memoria";
     pthread_create(&hilo, NULL, func, (void *)args);
     pthread_detach(hilo);
 }

@@ -15,9 +15,9 @@ int main(int argc, char *argv[])
 
     while ((client_fd = esperar_cliente(log, server_fd)) != -1)
     {
-        //Nuevo socket de conección para cada nuevo cliente
-       /*  int *client_connection = new(sizeof(client_fd));
-        *client_connection = client_fd; */
+        // Nuevo socket de conección para cada nuevo cliente
+        /*  int *client_connection = new(sizeof(client_fd));
+         *client_connection = client_fd; */
         switch (recv_handshake_memoria(log, client_fd))
         {
         case KERNEL:
@@ -32,7 +32,7 @@ int main(int argc, char *argv[])
             atender_cliente(log, client_fd, atenderKernel);
             break;
         case CPU:
-            // atendercpu(log, &client_fd);
+            atender_cliente(log, client_fd, atenderCpu);
             break;
         case -1:
             log_info(log, "Alguien no deseado quizo entrar");
