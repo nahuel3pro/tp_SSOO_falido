@@ -1,6 +1,6 @@
 #include "../include/cpu_tasks.h"
 
-void atendercpu(void* void_args)
+void atenderCpu(void* void_args)
 {
     readline("> ");
 }

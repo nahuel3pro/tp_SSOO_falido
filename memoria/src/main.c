@@ -15,20 +15,24 @@ int main(int argc, char *argv[])
 
     while ((client_fd = esperar_cliente(log, server_fd)) != -1)
     {
+        //Nuevo socket de conección para cada nuevo cliente
+       /*  int *client_connection = new(sizeof(client_fd));
+        *client_connection = client_fd; */
         switch (recv_handshake_memoria(log, client_fd))
         {
         case KERNEL:
-           /*  log_info(log, "Se conectó el kernel");
-            pthread_t hilo;
-            t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
-            args->log = log;
-            args->fd = client_fd;
-            args->server_name = "Kernel/Memoria";
-            pthread_create(&hilo, NULL, atendercpu, (void *)args);
-            pthread_detach(hilo); */
+            /*  log_info(log, "Se conectó el kernel");
+             pthread_t hilo;
+             t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
+             args->log = log;
+             args->fd = client_fd;
+             args->server_name = "Kernel/Memoria";
+             pthread_create(&hilo, NULL, atendercpu, (void *)args);
+             pthread_detach(hilo); */
+            atender_cliente(log, client_fd, atenderKernel);
             break;
         case CPU:
-            //atendercpu(log, &client_fd);
+            // atendercpu(log, &client_fd);
             break;
         case -1:
             log_info(log, "Alguien no deseado quizo entrar");
@@ -37,10 +41,9 @@ int main(int argc, char *argv[])
         default:
             break;
         }
-        close(client_fd);
     }
 
-    // Memoria como cliente
+    // Memoria como cliente -- Pendiente
 
     /*     int servidor_fd = crear_conexion(config_get_string_value("IP_FILESYSTEM"), config_get_string_value("PUERTO_FILESYSTEM"));
         if (send_handshake(log, servidor_fd, "Memoria/Filesystem", KERNEL))
