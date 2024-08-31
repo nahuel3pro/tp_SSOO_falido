@@ -1,5 +1,7 @@
 {
     "files.associations": {
-        "main.h": "c"
+        "main.h": "c",
+        "config.h": "c",
+        "memory_tasks.h": "c"
     }
 }
