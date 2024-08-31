@@ -2,10 +2,10 @@
 
 int iniciar_servidor(t_log *logger, char *puerto_escucha)
 {
-    int err;
+    int yes = 1;
     int socket_servidor;
     // sockaddr_in = addrinfo
-    struct addrinfo hints, *servinfo, *p; // Para qué se usa *p?
+    struct addrinfo hints, *servinfo;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -24,6 +24,11 @@ int iniciar_servidor(t_log *logger, char *puerto_escucha)
         abort();
     };
     // int err = setsockopt(fd_escucha, SOL_SOCKET, SO_REUSEPORT, &(int){1}, sizeof(int));
+    if (setsockopt(socket_servidor, SOL_SOCKET, SO_REUSEADDR, &yes, sizeof(int)) == -1)
+    {
+        error_show("Setsockopt error");
+        abort();
+    }
     /* Esta linea la usaremos más tarde */
 
     // Asociamos el socket a un puerto
@@ -51,6 +56,7 @@ int esperar_cliente(t_log *logger, int server_fd)
     if (socket_cliente == -1)
     {
         log_error(logger, "Error al conectar un cliente!");
+        return socket_cliente;
     }
     log_info(logger, "Se conectó un cliente");
 
@@ -81,4 +87,15 @@ int crear_conexion(char *ip, char *puerto)
     freeaddrinfo(server_info);
 
     return socket_cliente;
+}
+
+void atender_cliente(t_log *log, int *client_fd, void (*func)(void))
+{
+    pthread_t hilo;
+    t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
+    args->log = log;
+    args->fd = client_fd;
+    //memcpy(args->server_name, connection_name, strlen(connection_name) + 1);
+    pthread_create(&hilo, NULL, func, (void *)args);
+    pthread_detach(hilo);
 }

@@ -24,7 +24,7 @@ typedef struct
     void *stream;    // Payload
 } t_buffer;
 
-bool send_handshake(t_log *logger, int fd, const char *connection_name);
+bool send_handshake(t_log *logger, int fd, const char *connection_name, int module);
 bool recv_handshake(t_log *logger, int server_fd);
 t_buffer *buffer_create();
 

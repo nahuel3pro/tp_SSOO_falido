@@ -1,24 +1,23 @@
 #include "../include/protocolo.h"
 
-bool send_handshake(t_log *logger, int fd_connection, const char *connection_name)
+bool send_handshake(t_log *logger, int fd_connection, const char *connection_name, int module)
 {
     size_t bytes;
-    int32_t handshake = 1;
     int32_t result = 0;
-
-    bytes = send(fd_connection, &handshake, sizeof(int32_t), 0);
+    bytes = send(fd_connection, &module, sizeof(int), 0);
     bytes = recv(fd_connection, &result, sizeof(int32_t), MSG_WAITALL);
 
     if (result == 1)
     {
         log_info(logger, "Handshake OK de %s, bienvenido", connection_name);
+        return true;
     }
     else
     {
         log_error(logger, "Handshake ERROR, no te conozco");
         close(fd_connection);
+        return false;
     }
-    return true;
 }
 
 bool recv_handshake(t_log *log, int server_fd)
