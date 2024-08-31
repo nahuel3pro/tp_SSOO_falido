@@ -26,6 +26,14 @@ typedef struct
 int iniciar_servidor(t_log *logger, char *puerto);
 int esperar_cliente(t_log *, int server_fd);
 int crear_conexion(char *ip, char *puerto);
+
+	/**
+	* @brief Crea un pthread_detach para atender el cliente entrante.
+	* @param log logger.
+    * @param client_fd puntero al socket de conexión entre cliente y sv.
+    * @param func función a ejecutar.
+	* @return void.
+	*/
 void atender_cliente(t_log *log, int *client_fd, void (*func)(void));
 
 #endif
