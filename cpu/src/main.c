@@ -11,7 +11,7 @@ int main(int argc, char *argv[])
     log = levantar_log(getcwd(NULL, 0), "cpu", config_get_string_value(config, "LOG_LEVEL"));
 
     // CPU como server
-    server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT"));
+/*     server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT"));
 
     while (1)
     {
@@ -30,7 +30,7 @@ int main(int argc, char *argv[])
             break;
         }
         close(client_fd);
-    }
+    } */
 
     // CPU como cliente
     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));

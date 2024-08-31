@@ -24,7 +24,16 @@ typedef struct
     void *stream;    // Payload
 } t_buffer;
 
+	/**
+	* @brief Intenta entrar en contacto con un servidor.
+	* @param logger loger.
+    * @param fd Socket de conexión del cliente.
+    * @param connection_name Modulos que establecen su conexión ej: Kernel/Memoria.
+	* @param module constante enum del propio cliente para que el servidor identifique.
+    * @return false si no se aceptó, true si se aceptó la conexión.
+	*/
 bool send_handshake(t_log *logger, int fd, const char *connection_name, int module);
+
 bool recv_handshake(t_log *logger, int server_fd);
 t_buffer *buffer_create();
 
