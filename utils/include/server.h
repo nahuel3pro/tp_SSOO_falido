@@ -20,13 +20,12 @@
 typedef struct
 {
     t_log *log;
-    int fd;
-    char *server_name;
+    int *fd;
 } t_procesar_conexion_args;
 
 int iniciar_servidor(t_log *logger, char *puerto);
 int esperar_cliente(t_log *, int server_fd);
 int crear_conexion(char *ip, char *puerto);
-void atender_cliente(t_log *log, int client_fd, void (*func)(void));
+void atender_cliente(t_log *log, int *client_fd, void (*func)(void));
 
 #endif

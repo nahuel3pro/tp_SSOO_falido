@@ -2,11 +2,10 @@
 
 int iniciar_servidor(t_log *logger, char *puerto_escucha)
 {
-    int err;
     int yes = 1;
     int socket_servidor;
     // sockaddr_in = addrinfo
-    struct addrinfo hints, *servinfo, *p; // Para qué se usa *p?
+    struct addrinfo hints, *servinfo;
 
     memset(&hints, 0, sizeof(hints));
     hints.ai_family = AF_UNSPEC;
@@ -90,12 +89,13 @@ int crear_conexion(char *ip, char *puerto)
     return socket_cliente;
 }
 
-void atender_cliente(t_log *log, int client_fd, void (*func)(void))
+void atender_cliente(t_log *log, int *client_fd, void (*func)(void))
 {
     pthread_t hilo;
     t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
     args->log = log;
     args->fd = client_fd;
+    //memcpy(args->server_name, connection_name, strlen(connection_name) + 1);
     pthread_create(&hilo, NULL, func, (void *)args);
     pthread_detach(hilo);
 }
