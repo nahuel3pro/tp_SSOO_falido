@@ -39,7 +39,7 @@ t_config *levantar_config(char *path, char *module)
     return nuevo_config;
 }
 
-t_log *levantar_log(char *path, char *module, char* log_level)
+t_log *levantar_log(char *path, char *module, char *log_level)
 {
     t_log *nuevo_logger;
     char *file_format = ".log";
@@ -53,4 +53,20 @@ t_log *levantar_log(char *path, char *module, char* log_level)
     printf("Logger de %s cargado!\n", module);
     free(file_dirr);
     return nuevo_logger;
+}
+
+void terminar_programa(int conexion, t_log *logger, t_config *config)
+{
+    if (logger != NULL)
+    {
+        log_destroy(logger);
+    }
+    if (config != NULL)
+    {
+        config_destroy(config);
+    }
+    if (conexion)
+    {
+        close(conexion);
+    }
 }
