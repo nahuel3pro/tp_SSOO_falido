@@ -98,7 +98,6 @@ void atender_cliente(t_log *log, int *client_fd, void (*func)(void))
     t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
     args->log = log;
     args->fd = client_fd;
-    // memcpy(args->server_name, connection_name, strlen(connection_name) + 1);
     pthread_create(&hilo, NULL, func, (void *)args);
     pthread_detach(hilo);
 }
