@@ -82,7 +82,10 @@ int crear_conexion(char *ip, char *puerto)
                             server_info->ai_protocol);
 
     // Ahora que tenemos el socket, vamos a conectarlo
-    connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen);
+    if (connect(socket_cliente, server_info->ai_addr, server_info->ai_addrlen))
+    {
+        abort();
+    }
 
     freeaddrinfo(server_info);
 
@@ -95,7 +98,6 @@ void atender_cliente(t_log *log, int *client_fd, void (*func)(void))
     t_procesar_conexion_args *args = malloc(sizeof(t_procesar_conexion_args));
     args->log = log;
     args->fd = client_fd;
-    //memcpy(args->server_name, connection_name, strlen(connection_name) + 1);
     pthread_create(&hilo, NULL, func, (void *)args);
     pthread_detach(hilo);
 }

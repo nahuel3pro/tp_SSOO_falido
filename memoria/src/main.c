@@ -1,9 +1,9 @@
 #include "../include/main.h"
+t_config *config;
+t_log *log;
 
 int main(int argc, char *argv[])
 {
-    t_config *config = NULL;
-    t_log *log = NULL;
     int server_fd = 0;
     int client_fd = 0;
 
@@ -35,15 +35,6 @@ int main(int argc, char *argv[])
             break;
         }
     }
-
-    // Memoria como cliente -- Pendiente
-
-    /*     int servidor_fd = crear_conexion(config_get_string_value("IP_FILESYSTEM"), config_get_string_value("PUERTO_FILESYSTEM"));
-        if (send_handshake(log, servidor_fd, "Memoria/Filesystem", KERNEL))
-        {
-            log_info(log, "Comenzando operaciones con filesystem...");
-            readline("> ");
-        } */
 
     return EXIT_SUCCESS;
 }
