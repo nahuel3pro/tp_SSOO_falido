@@ -1,6 +1,6 @@
 #include "../include/kernel_tasks.h"
 
-void *atenderKernel(void *void_args)
+void atenderKernel(void *void_args)
 {
     t_procesar_conexion_args *args = (t_procesar_conexion_args *)void_args;
     // t_log *logger = args->log;

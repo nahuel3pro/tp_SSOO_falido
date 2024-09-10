@@ -1,6 +1,6 @@
 #include "../include/cpu_tasks.h"
 
-void *atenderCpu(void *void_args)
+void atenderCpu(void *void_args)
 {
     log_info(log,"atendiendo cpu con memoria...");
     t_procesar_conexion_args *args = (t_procesar_conexion_args *)void_args;
