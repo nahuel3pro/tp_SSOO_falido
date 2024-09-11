@@ -23,9 +23,16 @@ typedef struct
     int *fd;
 } t_procesar_conexion_args;
 
+extern t_log* log;
+
 int iniciar_servidor(t_log *logger, char *puerto);
 int esperar_cliente(t_log *, int server_fd);
 int crear_conexion(char *ip, char *puerto);
+
+void* recibir_buffer(int*, int);
+t_list* recibir_paquete(int);
+void recibir_mensaje(int);
+int recibir_operacion(int);
 
 	/**
 	* @brief Crea un pthread_detach para atender el cliente entrante.

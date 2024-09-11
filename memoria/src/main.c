@@ -9,13 +9,14 @@ int main(int argc, char *argv[])
 
     config = levantar_config(getcwd(NULL, 0), "memoria");
     log = levantar_log(getcwd(NULL, 0), "memoria", config_get_string_value(config, "LOG_LEVEL"));
+    
 
     // Memoria como sv
     server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA"));
 
     while ((client_fd = esperar_cliente(log, server_fd)) != -1)
     {
-        // Nuevo socket de conección para cada nuevo cliente
+        // Nuevo socket de conexión para cada nuevo cliente
         int *client_connection = malloc(sizeof(client_fd));
         *client_connection = client_fd;
         switch (recv_handshake_memoria(log, *client_connection))

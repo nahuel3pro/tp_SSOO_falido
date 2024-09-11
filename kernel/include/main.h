@@ -6,5 +6,6 @@
 #include <../include/protocolo.h>
 #include <../include/hello.h>
 #include <readline/readline.h>
+#include <../include/client.h>
 
 #endif
