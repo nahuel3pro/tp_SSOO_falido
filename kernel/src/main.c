@@ -6,21 +6,41 @@ t_dictionary *dict = NULL;
 int main(int argc, char *argv[])
 {
     // Definiendo herramientas.
-    config = levantar_config(getcwd(NULL, 0), "kernel");
+    /* config = levantar_config(getcwd(NULL, 0), "kernel");
     log = levantar_log(getcwd(NULL, 0), "kernel", config_get_string_value(config, "LOG_LEVEL"));
     dict = dict_protocol();
     log_info(log, "%d", dictionary_get(dict, "LOG"));
     const char *path_to_psdc = argv[1];
-    const int size = atoi(argv[2]);
-    char *line;
+    const int process_size = atoi(argv[2]);
+    char *line; */
+
+    // creación del proceso 0
+    PCB process = malloc(sizeof(PCB));
+    process->PID = 0;
+    process->TIDs = list_create();
+    // thread inicial
+    TCB thr = malloc(sizeof(TCB));
+    thr->TID = 0;
+    thr->priority = HIGH;
+    // se agrega el thread 0.
+    list_add(process->TIDs, thr);
+
+    // Cola de new
+    t_queue *new = queue_create();
+    queue_push(new, process);
+
+    PCB new_process = queue_pop(new);
+    free(new_process);
+    // Y solicitar el espacio a memoria, si hay, se pasará a la lista de ready.
+    t_queue *ready = queue_create();
 
 
     // Continuously call get_next_line until it returns NULL (EOF)
-    while ((line = get_next_line(path_to_psdc)) != NULL)
-    {
-        log_info(log, "%s", line);
-        readline("> ");
-    }
+    /*     while ((line = get_next_line(path_to_psdc)) != NULL)
+        {
+            log_info(log, "%s", line);
+            readline("> ");
+        } */
 
     // Conectarse a memoria
     /* int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
