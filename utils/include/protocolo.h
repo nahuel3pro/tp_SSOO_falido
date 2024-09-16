@@ -51,6 +51,13 @@ typedef enum
     FILESYSTEM
 } op_module;
 
+typedef enum{
+    PROCESS_CREATION,
+    PROCESS_KILL,
+    THREAD_CREATION,
+    MEMORY_DUMP
+} op_memory_kernel;
+
 typedef struct
 {
     uint32_t size;   // Tamaño del payload
@@ -67,7 +74,6 @@ typedef struct
  * @return false si no se aceptó, true si se aceptó la conexión.
  */
 bool send_handshake(t_log *logger, int fd, const char *connection_name, int module);
-
 bool recv_handshake(t_log *logger, int server_fd);
 t_buffer *buffer_create();
 t_dictionary *dict_protocol();

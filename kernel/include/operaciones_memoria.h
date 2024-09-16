@@ -1,0 +1,6 @@
+#ifndef H_OPERACIONES_MEMORIA_H
+#define H_OPERACIONES_MEMORIA_H
+
+
+
+#endif
