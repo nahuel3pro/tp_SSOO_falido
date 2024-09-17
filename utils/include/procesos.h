@@ -3,25 +3,21 @@
 
 #include <stdint.h>
 #include <commons/collections/list.h>
+typedef enum{
+    HIGH,
+    MEDIUM,
+    LOW
+} thrd_priority;
 
-typedef enum
-{
-    ALTA,
-    MEDIANA,
-    BAJA
-} prioridad;
-
-typedef struct
-{
+typedef struct{
     int32_t PID;
-    t_list TID;
-    t_list mutex;
-} PCB;
+    t_list *TIDs;
+    //t_list *mutex; Lo dejo comentado para cuando lo necesitemos.
+    int32_t size;
+} *PCB;
 
-typedef struct
-{
-    int32_t TID;
-    prioridad p;
-} TCB;
-
+typedef struct{
+    int TID;
+    thrd_priority priority;
+} *TCB;
 #endif

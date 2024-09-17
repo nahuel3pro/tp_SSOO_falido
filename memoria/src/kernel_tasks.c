@@ -10,11 +10,13 @@ void atenderKernel(void *void_args)
     log_info(log, "## Kernel Conectado - FD del socket: <%d>", *socket_kernel_mem);
     while (1)
     {
-        int cod_op = recibir_operacion(socket_kernel_mem);
+        int cod_op = recibir_operacion(*socket_kernel_mem);
         switch (cod_op)
         {
         case PROCESS_CREATION:                                   // Crear protocolo de comunicación con kernel
+            
             log_info(log, "Asignando espacio en memoria... OK"); // que reciba y muestre el tamaño del processo.
+            
             break;
         case PROCESS_KILL:
             break;
