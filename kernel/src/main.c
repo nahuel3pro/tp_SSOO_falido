@@ -45,6 +45,7 @@ int main(int argc, char *argv[])
     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
     if(send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL)){
         log_info(log,"Conectado a memoria.");
+        
     } // Estaría bueno que sepa el server quién se conectó.
     readline("> ");
     // Conectarse a cpu dispatch
