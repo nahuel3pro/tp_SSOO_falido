@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
     // send(socket_cliente, &p, sizeof(uint8_t), 0);
     //  proceso 0
     t_PCB pcb = malloc(sizeof(t_PCB));
-    pcb->PID = 1;
+    pcb->PID = (uint32_t)98;
     // pcb->TIDs = list_create();
     pcb->size = process_size;
     // thread 0

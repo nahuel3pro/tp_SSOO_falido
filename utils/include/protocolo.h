@@ -10,7 +10,6 @@
 #include <unistd.h>
 #include <stdint.h>
 #include "procesos.h"
-#include "client.h"
 
 typedef enum
 {

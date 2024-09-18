@@ -6,7 +6,6 @@
 #include <../include/protocolo.h>
 #include <../include/hello.h>
 #include <readline/readline.h>
-#include <../include/client.h>
 #include <commons/collections/dictionary.h>
 #include <commons/collections/queue.h>
 #include "../include/operaciones_kernel.h"
