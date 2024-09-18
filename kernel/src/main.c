@@ -26,12 +26,10 @@ int main(int argc, char *argv[])
 
     //  proceso 0
     t_PCB pcb = malloc(sizeof(t_PCB));
-    pcb->PID = (uint32_t)98;
+    pcb->PID = (uint32_t)1;
     // pcb->TIDs = list_create();
-    pcb->size = (uint32_t)50;
+    pcb->size = (uint32_t)process_size;
     // thread 0
-
-
 
     // Serializar el proceso. Buffer con los datos del PCB --- SERIALIZA BIEN, BUFFER CON DATOS.
     t_buffer *buffer = serializarProceso(pcb);
@@ -40,6 +38,15 @@ int main(int argc, char *argv[])
     if (send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0)
     {
         log_info(log, "Proceso enviado");
+        uint8_t res;
+        if (recv(socket_cliente, &res, sizeof(uint8_t), MSG_WAITALL) > 0 && res == (uint8_t)0)
+        {
+            log_info(log, "Proceso cargado exitosamente!");
+        }
+        else
+        {
+            log_error(log, "No hay memoria disponible, volviendo a la cola de ready...");
+        }
     }
     else
     {
