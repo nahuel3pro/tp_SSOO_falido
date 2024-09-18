@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include "procesos.h"
+#include "client.h"
 
 typedef enum
 {
@@ -67,6 +68,12 @@ typedef struct
     void *stream;    // Payload
 } t_buffer;
 
+typedef struct
+{
+	uint8_t op_code;
+	t_buffer *buffer;
+} t_paquete;
+
 /**
  * @brief Intenta entrar en contacto con un servidor.
  * @param logger loger.
@@ -82,6 +89,14 @@ void buffer_destroy(t_buffer *buffer);
 
 t_dictionary *dict_protocol();
 
+void enviar_mensaje(char *mensaje, int socket_cliente);
+t_paquete *crear_paquete(void);
+void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
+void enviar_paquete(t_paquete *paquete, int socket_cliente);
+void liberar_conexion(int socket_cliente);
+void eliminar_paquete(t_paquete *paquete);
+
+
 t_buffer* serializarProceso(t_PCB pcb);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);
 void buffer_add_uint32(t_buffer *buffer, uint32_t data);
@@ -89,5 +104,7 @@ void buffer_read(t_buffer *buffer, void *data, uint32_t size);
 uint32_t buffer_read_uint32(t_buffer *buffer);
 uint8_t buffer_read_uint8(t_buffer *buffer);
 char *buffer_read_string(t_buffer *buffer, uint32_t *length);
+
+int send_pcb(t_PCB pcb, op_memory_kernel op_code, t_buffer *buffer, int socket_cliente);
 
 #endif
