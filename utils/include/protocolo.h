@@ -52,7 +52,8 @@ typedef enum
     FILESYSTEM
 } op_module;
 
-typedef enum{
+typedef enum
+{
     PROCESS_CREATION,
     PROCESS_KILL,
     THREAD_CREATION,
@@ -76,11 +77,12 @@ typedef struct
  */
 bool send_handshake(t_log *logger, int fd, const char *connection_name, int module);
 bool recv_handshake(t_log *logger, int server_fd);
-t_buffer *buffer_create();
+t_buffer *buffer_create(uint32_t size);
+void buffer_destroy(t_buffer *buffer);
+
 t_dictionary *dict_protocol();
 
-t_buffer* serializarProceso(PCB pcb);
-PCB *persona_deserializar(t_buffer *buffer);
+t_buffer* serializarProceso(t_PCB pcb);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);
 void buffer_add_uint32(t_buffer *buffer, uint32_t data);
 void buffer_read(t_buffer *buffer, void *data, uint32_t size);

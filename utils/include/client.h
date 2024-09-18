@@ -13,7 +13,7 @@
 
 typedef struct
 {
-	op_module codigo_modulo;
+	uint8_t op_code;
 	t_buffer* buffer;
 } t_paquete;
 

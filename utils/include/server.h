@@ -32,7 +32,7 @@ int crear_conexion(char *ip, char *puerto);
 void* recibir_buffer(int*, int);
 t_list* recibir_paquete(int);
 void recibir_mensaje(int);
-int recibir_operacion(int);
+uint8_t recibir_operacion(int);
 
 	/**
 	* @brief Crea un pthread_detach para atender el cliente entrante.

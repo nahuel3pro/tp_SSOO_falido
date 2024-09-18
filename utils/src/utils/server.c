@@ -102,10 +102,10 @@ void atender_cliente(t_log *log, int *client_fd, void (*func)(void))
     pthread_detach(hilo);
 }
 
-int recibir_operacion(int socket_cliente)
+uint8_t recibir_operacion(int socket_cliente)
 {
-	int cod_op;
-	if(recv(socket_cliente, &cod_op, sizeof(int), MSG_WAITALL) > 0)
+	uint8_t cod_op;
+	if(recv(socket_cliente, &cod_op, sizeof(uint8_t), MSG_WAITALL) > 0)
 		return cod_op;
 	else
 	{

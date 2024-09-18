@@ -10,14 +10,14 @@ typedef enum{
 } thrd_priority;
 
 typedef struct{
-    int32_t PID;
-    t_list *TIDs;
+    uint32_t PID;
+    //t_list *TIDs;
     //t_list *mutex; Lo dejo comentado para cuando lo necesitemos.
-    int32_t size;
-} *PCB;
+    uint32_t size;
+} *t_PCB;
 
 typedef struct{
-    int TID;
+    uint32_t TID;
     thrd_priority priority;
-} *TCB;
+} *t_TCB;
 #endif

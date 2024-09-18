@@ -62,6 +62,12 @@ t_buffer *buffer_create(uint32_t size)
     return buffer;
 };
 
+void buffer_destroy(t_buffer *buffer)
+{
+    free(buffer->stream);
+    free(buffer);
+}
+
 t_dictionary *dict_protocol()
 {
 
@@ -100,9 +106,9 @@ t_dictionary *dict_protocol()
     return dict;
 }
 
-t_buffer* serializarProceso(PCB pcb)
+t_buffer *serializarProceso(t_PCB pcb)
 {
-    t_buffer* buffer = buffer_create(sizeof(int32_t) * 2);
+    t_buffer *buffer = buffer_create(sizeof(int32_t) * 2);
 
     buffer_add_uint32(buffer, pcb->PID);
     buffer_add_uint32(buffer, pcb->size);
@@ -110,56 +116,51 @@ t_buffer* serializarProceso(PCB pcb)
     return buffer;
 }
 
-PCB *persona_deserializar(t_buffer *buffer) 
-{
-    PCB pcb = malloc(sizeof(PCB));
-
-    pcb->PID = buffer_read_uint32(buffer);
-    pcb->size = buffer_read_uint32(buffer);
-
-    return pcb;
-}
-
-
 // Agrega un stream al buffer en la posición actual y avanza el offset
-void buffer_add(t_buffer *buffer, void *data, uint32_t size){
+void buffer_add(t_buffer *buffer, void *data, uint32_t size)
+{
     memcpy(buffer->stream + buffer->offset, data, size);
     buffer->offset += size;
 };
 
 // Agrega un uint32_t al buffer
-void buffer_add_uint32(t_buffer *buffer, uint32_t data){
+void buffer_add_uint32(t_buffer *buffer, uint32_t data)
+{
     buffer_add(buffer, &data, sizeof(uint32_t));
 }
 
 // Agrega un uint8_t al buffer
-void buffer_add_uint8(t_buffer *buffer, uint8_t data){
+void buffer_add_uint8(t_buffer *buffer, uint8_t data)
+{
     buffer_add(buffer, &data, sizeof(uint8_t));
 }
 
-
 // Guarda size bytes del principio del buffer en la dirección data y avanza el offset
-void buffer_read(t_buffer *buffer, void *data, uint32_t size){
+void buffer_read(t_buffer *buffer, void *data, uint32_t size)
+{
     memcpy(data, buffer->stream + buffer->offset, size);
     buffer->offset += size;
 };
 
 // Lee un uint32_t del buffer y avanza el offset
-uint32_t buffer_read_uint32(t_buffer *buffer){
+uint32_t buffer_read_uint32(t_buffer *buffer)
+{
     uint32_t data;
     buffer_read(buffer, &data, sizeof(uint32_t));
     return data;
 }
 
 // Lee un uint8_t del buffer y avanza el offset
-uint8_t buffer_read_uint8(t_buffer *buffer){
+uint8_t buffer_read_uint8(t_buffer *buffer)
+{
     uint8_t data;
     buffer_read(buffer, &data, sizeof(uint8_t));
     return data;
 }
 
 // Lee un string y su longitud del buffer y avanza el offset
-char *buffer_read_string(t_buffer *buffer, uint32_t *length){
+char *buffer_read_string(t_buffer *buffer, uint32_t *length)
+{
     *length = buffer_read_uint32(buffer);
     char *string = malloc(*length);
     buffer_read(buffer, string, *length);
