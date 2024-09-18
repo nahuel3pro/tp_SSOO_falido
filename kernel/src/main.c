@@ -22,26 +22,27 @@ int main(int argc, char *argv[])
 
     // Conectarse a memoria
     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL); // Estaría bueno que sepa el server quién se conectó.
+    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
 
-    uint8_t p = (uint8_t)PROCESS_KILL;
-    // send(socket_cliente, &p, sizeof(uint8_t), 0);
     //  proceso 0
     t_PCB pcb = malloc(sizeof(t_PCB));
     pcb->PID = (uint32_t)98;
     // pcb->TIDs = list_create();
-    pcb->size = process_size;
+    pcb->size = (uint32_t)50;
     // thread 0
-    t_TCB thread = malloc(sizeof(t_TCB));
-    thread->priority = HIGH;
-    thread->TID = 0;
-    // Serializar el proceso. Buffer con los datos del PCB
+
+
+
+    // Serializar el proceso. Buffer con los datos del PCB --- SERIALIZA BIEN
     t_buffer *buffer = serializarProceso(pcb);
+
     // empaquetar --------------- enviar pcb
-    if(send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0){
+    if (send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0)
+    {
         log_info(log, "Proceso enviado");
     }
-    else{
+    else
+    {
         log_error(log, "no se pudo mandar el proceso");
     }
 

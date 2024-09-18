@@ -157,25 +157,19 @@ char *buffer_read_string(t_buffer *buffer, uint32_t *length)
     return string;
 }
 
-int send_pcb(t_PCB pcb, op_memory_kernel op_code, t_buffer *buffer, int socket_cliente)
+
+
+int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
 {
-    // empaquetar --------------- enviar pcb
+    // empaquetar ---------------
     t_paquete *paquete = malloc(sizeof(t_paquete));
-    paquete->op_code = (uint8_t)op_code;
+    paquete->op_code = (uint32_t)op_code;
     paquete->buffer = buffer;
 
     // Armamos el stream a enviar
 
     // OP CODE      // tamaño del stream   // stream
-    void *a_enviar = malloc(sizeof(uint8_t) + sizeof(uint32_t) + buffer->size);
-    int offset = 0;
-
-    memcpy(a_enviar + offset, &(paquete->op_code), sizeof(uint8_t));
-
-    offset += sizeof(uint8_t);
-    memcpy(a_enviar + offset, &(paquete->buffer->size), sizeof(uint32_t));
-    offset += sizeof(uint32_t);
-    memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
+    void *a_enviar = serializar_paquete(paquete, buffer->size);
 
     // Por último enviamos
     int bytes = send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
@@ -183,83 +177,83 @@ int send_pcb(t_PCB pcb, op_memory_kernel op_code, t_buffer *buffer, int socket_c
     return bytes;
 }
 
-void* serializar_paquete(t_paquete* paquete, int bytes)
+void *serializar_paquete(t_paquete *paquete, int bytes)
 {
-	void * magic = malloc(bytes);
-	int desplazamiento = 0;
+    void *magic = malloc(bytes);
+    int desplazamiento = 0;
 
-	memcpy(magic + desplazamiento, &(paquete->op_code), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(int));
-	desplazamiento+= sizeof(int);
-	memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
-	desplazamiento+= paquete->buffer->size;
+    memcpy(magic + desplazamiento, &(paquete->op_code), sizeof(uint8_t));
+    desplazamiento += sizeof(uint8_t);
+    memcpy(magic + desplazamiento, &(paquete->buffer->size), sizeof(uint32_t));
+    desplazamiento += sizeof(uint32_t);
+    memcpy(magic + desplazamiento, paquete->buffer->stream, paquete->buffer->size);
+    desplazamiento += paquete->buffer->size;
 
-	return magic;
+    return magic;
 }
 
-void enviar_mensaje(char* mensaje, int socket_cliente)
+void enviar_mensaje(char *mensaje, int socket_cliente)
 {
-	t_paquete* paquete = malloc(sizeof(t_paquete));
+    t_paquete *paquete = malloc(sizeof(t_paquete));
 
-	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = strlen(mensaje) + 1;
-	paquete->buffer->stream = malloc(paquete->buffer->size);
-	memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
+    paquete->buffer = malloc(sizeof(t_buffer));
+    paquete->buffer->size = strlen(mensaje) + 1;
+    paquete->buffer->stream = malloc(paquete->buffer->size);
+    memcpy(paquete->buffer->stream, mensaje, paquete->buffer->size);
 
-	int bytes = paquete->buffer->size + 2*sizeof(int);
+    int bytes = paquete->buffer->size + 2 * sizeof(int);
 
-	void* a_enviar = serializar_paquete(paquete, bytes);
+    void *a_enviar = serializar_paquete(paquete, bytes);
 
-	send(socket_cliente, a_enviar, bytes, 0);
+    send(socket_cliente, a_enviar, bytes, 0);
 
-	free(a_enviar);
-	eliminar_paquete(paquete);
+    free(a_enviar);
+    eliminar_paquete(paquete);
 }
 
-
-void crear_buffer(t_paquete* paquete)
+void crear_buffer(t_paquete *paquete)
 {
-	paquete->buffer = malloc(sizeof(t_buffer));
-	paquete->buffer->size = 0;
-	paquete->buffer->stream = NULL;
+    paquete->buffer = malloc(sizeof(t_buffer));
+    paquete->buffer->size = 0;
+    paquete->buffer->stream = NULL;
 }
 
-t_paquete* crear_paquete(void)
+void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio)
 {
-	t_paquete* paquete = malloc(sizeof(t_paquete));
-	crear_buffer(paquete);
-	return paquete;
+    paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio + sizeof(int));
+
+    memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio, sizeof(int));
+    memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), valor, tamanio);
+
+    paquete->buffer->size += tamanio + sizeof(int);
 }
 
-void agregar_a_paquete(t_paquete* paquete, void* valor, int tamanio)
+void enviar_paquete(t_paquete *paquete, int socket_cliente)
 {
-	paquete->buffer->stream = realloc(paquete->buffer->stream, paquete->buffer->size + tamanio + sizeof(int));
+    int bytes = paquete->buffer->size + 2 * sizeof(int);
+    void *a_enviar = serializar_paquete(paquete, bytes);
 
-	memcpy(paquete->buffer->stream + paquete->buffer->size, &tamanio, sizeof(int));
-	memcpy(paquete->buffer->stream + paquete->buffer->size + sizeof(int), valor, tamanio);
+    send(socket_cliente, a_enviar, bytes, 0);
 
-	paquete->buffer->size += tamanio + sizeof(int);
+    free(a_enviar);
 }
 
-void enviar_paquete(t_paquete* paquete, int socket_cliente)
+void eliminar_paquete(t_paquete *paquete)
 {
-	int bytes = paquete->buffer->size + 2*sizeof(int);
-	void* a_enviar = serializar_paquete(paquete, bytes);
-
-	send(socket_cliente, a_enviar, bytes, 0);
-
-	free(a_enviar);
-}
-
-void eliminar_paquete(t_paquete* paquete)
-{
-	free(paquete->buffer->stream);
-	free(paquete->buffer);
-	free(paquete);
+    free(paquete->buffer->stream);
+    free(paquete->buffer);
+    free(paquete);
 }
 
 void liberar_conexion(int socket_cliente)
 {
-	close(socket_cliente);
+    close(socket_cliente);
+}
+
+t_paquete *crear_paquete(op_code codigo) // CREA BUFFER
+{
+    t_paquete *paquete = malloc(sizeof(t_paquete));
+    paquete->op_code = codigo;
+    crear_buffer(paquete); // Le inyecta un buffer
+    return paquete;
 }

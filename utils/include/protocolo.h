@@ -58,7 +58,7 @@ typedef enum
     PROCESS_KILL,
     THREAD_CREATION,
     MEMORY_DUMP
-} op_memory_kernel;
+} op_code;
 
 typedef struct
 {
@@ -69,8 +69,8 @@ typedef struct
 
 typedef struct
 {
-	uint8_t op_code;
-	t_buffer *buffer;
+    uint8_t op_code;
+    t_buffer *buffer;
 } t_paquete;
 
 /**
@@ -89,14 +89,14 @@ void buffer_destroy(t_buffer *buffer);
 t_dictionary *dict_protocol();
 
 void enviar_mensaje(char *mensaje, int socket_cliente);
-t_paquete *crear_paquete(void);
+t_paquete *crear_paquete(op_code codigo);
 void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
 void enviar_paquete(t_paquete *paquete, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete *paquete);
 
-
-t_buffer* serializarProceso(t_PCB pcb);
+t_buffer *serializarProceso(t_PCB pcb);
+void *serializar_paquete(t_paquete *paquete, int bytes);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);
 void buffer_add_uint32(t_buffer *buffer, uint32_t data);
 void buffer_read(t_buffer *buffer, void *data, uint32_t size);
@@ -104,6 +104,7 @@ uint32_t buffer_read_uint32(t_buffer *buffer);
 uint8_t buffer_read_uint8(t_buffer *buffer);
 char *buffer_read_string(t_buffer *buffer, uint32_t *length);
 
-int send_pcb(t_PCB pcb, op_memory_kernel op_code, t_buffer *buffer, int socket_cliente);
+int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente);
+void crear_buffer(t_paquete *paquete);
 
 #endif

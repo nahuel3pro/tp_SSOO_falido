@@ -24,13 +24,8 @@ void atenderKernel(void *void_args)
         paquete->buffer->stream = malloc(paquete->buffer->size);
         recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
         //des-serealizando
-        t_PCB pcb = malloc(sizeof(t_PCB));
-        void* stream = paquete->buffer->stream;
-        memcpy(&(pcb->PID), stream,sizeof(uint32_t));
-        stream += sizeof(uint32_t);
-        memcpy(&(pcb->size), stream,sizeof(uint32_t));
-        log_info(log, "PID: %d\n", pcb->PID);
-        log_info(log, "Tamaño: %d\n", pcb->size);
+        uint32_t pid= buffer_read_uint32(paquete->buffer);
+        log_info(log, "PID: %d",pid);
 
 
         break;
