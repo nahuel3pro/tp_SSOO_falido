@@ -108,7 +108,7 @@ t_dictionary *dict_protocol()
 
 t_buffer *serializarProceso(t_PCB pcb)
 {
-    t_buffer *buffer = buffer_create(sizeof(int32_t) * 2);
+    t_buffer *buffer = buffer_create(sizeof(uint32_t) * 2);
 
     buffer_add_uint32(buffer, pcb->PID);
     buffer_add_uint32(buffer, pcb->size);

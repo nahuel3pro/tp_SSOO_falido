@@ -35,15 +35,17 @@ int main(int argc, char *argv[])
     t_TCB thread = malloc(sizeof(t_TCB));
     thread->priority = HIGH;
     thread->TID = 0;
-    // Serializar el proceso.
+    // Serializar el proceso. Buffer con los datos del PCB
     t_buffer *buffer = serializarProceso(pcb);
     // empaquetar
     t_paquete *paquete = malloc(sizeof(t_paquete));
-    paquete->op_code = (uint8_t)PROCESS_CREATION;
+    paquete->op_code = (uint8_t)PROCESS_KILL;
     paquete->buffer = buffer;
 
     // Armamos el stream a enviar
-    void *a_enviar = malloc(buffer->size + sizeof(uint8_t) + sizeof(uint32_t));
+    // void *a_enviar = malloc(buffer->size + sizeof(uint8_t) + sizeof(uint32_t));
+                            // OP CODE      // tamaño del stream  stream
+    void *a_enviar = malloc(sizeof(uint8_t) + sizeof(uint32_t) + buffer->size);
     int offset = 0;
 
     memcpy(a_enviar + offset, &(paquete->op_code), sizeof(uint8_t));
@@ -54,7 +56,9 @@ int main(int argc, char *argv[])
     memcpy(a_enviar + offset, paquete->buffer->stream, paquete->buffer->size);
 
     // Por último enviamos
-    send(socket_cliente, a_enviar, buffer->size + sizeof(uint8_t) + sizeof(uint32_t), 0);
+    send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size , 0);
+    /* uint8_t code = (uint8_t)PROCESS_KILL;
+    send(socket_cliente, &code, sizeof(uint8_t), 0) */;
 
     readline(">");
     // Conectarse a cpu dispatch

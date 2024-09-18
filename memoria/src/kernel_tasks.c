@@ -8,17 +8,14 @@ void atenderKernel(void *void_args)
     free(args);
 
     log_info(log, "## Kernel Conectado - FD del socket: <%d>", *socket_kernel_mem);
-
     // uint8_t cod_op = recibir_operacion(*socket_kernel_mem);
+    
+    
     t_paquete *paquete = malloc(sizeof(t_paquete));
-
     paquete->buffer = malloc(sizeof(t_buffer));
+
     // Primero recibimos el codigo de operacion
-    recv(socket_kernel_mem, &(paquete->op_code), sizeof(uint8_t), 0);
-    // Después ya podemos recibir el buffer.Primero su tamaño seguido del contenido
-    recv(socket_kernel_mem, &(paquete->buffer->size), sizeof(uint32_t), 0);
-    paquete->buffer->stream = malloc(paquete->buffer->size);
-    recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
+    recv(*socket_kernel_mem, &(paquete->op_code), sizeof(uint8_t), 0);
     switch ((int)paquete->op_code)
     {
     case PROCESS_CREATION:                                   // Crear protocolo de comunicación con kernel
