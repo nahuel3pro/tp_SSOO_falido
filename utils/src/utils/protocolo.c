@@ -166,10 +166,9 @@ int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
     paquete->op_code = (uint32_t)op_code;
     paquete->buffer = buffer;
 
-    // Armamos el stream a enviar
-
     // OP CODE      // tamaño del stream   // stream
-    void *a_enviar = serializar_paquete(paquete, buffer->size);
+    void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
+    // pruebas.
 
     // Por último enviamos
     int bytes = send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
@@ -215,6 +214,7 @@ void crear_buffer(t_paquete *paquete)
 {
     paquete->buffer = malloc(sizeof(t_buffer));
     paquete->buffer->size = 0;
+    paquete->buffer->offset = 0;
     paquete->buffer->stream = NULL;
 }
 

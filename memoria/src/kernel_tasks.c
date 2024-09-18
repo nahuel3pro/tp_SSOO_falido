@@ -11,7 +11,7 @@ void atenderKernel(void *void_args)
     // uint8_t cod_op = recibir_operacion(*socket_kernel_mem);
 
     t_paquete *paquete = malloc(sizeof(t_paquete));
-    paquete->buffer = malloc(sizeof(t_buffer));
+    crear_buffer(paquete);
 
     // Primero recibimos el codigo de operacion
     recv(*socket_kernel_mem, &(paquete->op_code), sizeof(uint8_t), 0);
@@ -20,14 +20,14 @@ void atenderKernel(void *void_args)
     case PROCESS_CREATION:                                   // Crear protocolo de comunicación con kernel
         log_info(log, "Asignando espacio en memoria... OK"); // que reciba y muestre el tamaño del processo.
                                                              // Después ya podemos recibir el buffer. Primero su tamaño seguido del contenido
-        recv(socket_kernel_mem, &(paquete->buffer->size), sizeof(uint32_t), 0);
+        recv(*socket_kernel_mem, &(paquete->buffer->size), sizeof(uint32_t), 0);
         paquete->buffer->stream = malloc(paquete->buffer->size);
-        recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
-        //des-serealizando
+        recv(*socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
+        //des-serealizando ---> Crear función.
         uint32_t pid= buffer_read_uint32(paquete->buffer);
         log_info(log, "PID: %d",pid);
-
-
+        uint32_t size= buffer_read_uint32(paquete->buffer);
+        log_info(log, "Tamaño del proceso: %d",size);
         break;
     case PROCESS_KILL:
         log_info(log, "Matando el proceso");

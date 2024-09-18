@@ -33,7 +33,7 @@ int main(int argc, char *argv[])
 
 
 
-    // Serializar el proceso. Buffer con los datos del PCB --- SERIALIZA BIEN
+    // Serializar el proceso. Buffer con los datos del PCB --- SERIALIZA BIEN, BUFFER CON DATOS.
     t_buffer *buffer = serializarProceso(pcb);
 
     // empaquetar --------------- enviar pcb
