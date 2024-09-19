@@ -3,12 +3,10 @@
 void atenderKernel(void *void_args)
 {
     t_procesar_conexion_args *args = (t_procesar_conexion_args *)void_args;
-    // t_log *logger = args->log;
     int *socket_kernel_mem = args->fd;
     free(args);
 
     log_info(log, "## Kernel Conectado - FD del socket: <%d>", *socket_kernel_mem);
-    // uint8_t cod_op = recibir_operacion(*socket_kernel_mem);
 
     t_paquete *paquete = malloc(sizeof(t_paquete));
     crear_buffer(paquete);
@@ -27,9 +25,9 @@ void atenderKernel(void *void_args)
         uint32_t size = buffer_read_uint32(paquete->buffer);
         // Demorar tiempo y responder
         int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
-        sleep(wait_time/1000); // Espera
+        sleep(wait_time/1000); // Espera de un segundo
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
-        send(*socket_kernel_mem, &res, sizeof(uint8_t), 0);
+        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         break;
     case PROCESS_KILL:
         log_info(log, "Matando el proceso");
@@ -44,6 +42,7 @@ void atenderKernel(void *void_args)
         log_warning(log, "Operacion desconocida. No quieras meter la pata");
         break;
     }
+    // Se cierra la conexión con el kernel
     close(*socket_kernel_mem);
     free(socket_kernel_mem);
 }

@@ -95,7 +95,7 @@ t_dictionary *dict_protocol()
 
     return dict;
 }
-
+// ------------ FALTAN SERIALIZAR LISTAS DE MUTEX E HILOS
 t_buffer *serializarProceso(t_PCB pcb)
 {
     t_buffer *buffer = buffer_create(sizeof(uint32_t) * 2);
