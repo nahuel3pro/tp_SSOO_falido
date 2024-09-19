@@ -25,13 +25,9 @@ int main(int argc, char *argv[])
     send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
 
     //  proceso 0
-    t_PCB pcb = malloc(sizeof(t_PCB));
-    pcb->PID = (uint32_t)1;
-    // pcb->TIDs = list_create();
-    pcb->size = (uint32_t)process_size;
-    // thread 0
+    t_PCB pcb = pcb_create(1,process_size);
 
-    // Serializar el proceso. Buffer con los datos del PCB --- SERIALIZA BIEN, BUFFER CON DATOS.
+    // Serializar el proceso. Buffer con los datos del PCB --- Faltan datos.
     t_buffer *buffer = serializarProceso(pcb);
 
     // empaquetar --------------- enviar pcb

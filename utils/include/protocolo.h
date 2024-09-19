@@ -13,6 +13,12 @@
 
 typedef enum
 {
+    SUCCESS,
+    FAILURE
+} result;
+
+typedef enum
+{
     // Instrucciones Básicas
     INSTRUCCION_SET,
     INSTRUCCION_SUM,
@@ -54,6 +60,7 @@ typedef enum
 
 typedef enum
 {
+    // --- CÓDIGO DE OPERACIÓN KERNEL-MEMORIA ---
     PROCESS_CREATION,
     PROCESS_KILL,
     THREAD_CREATION,

@@ -162,10 +162,7 @@ char *buffer_read_string(t_buffer *buffer, uint32_t *length)
 int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
 {
     // empaquetar ---------------
-    t_paquete *paquete = malloc(sizeof(t_paquete));
-    paquete->op_code = (uint32_t)op_code;
-    paquete->buffer = buffer;
-
+    t_paquete *paquete = crear_paquete(op_code);
     // OP CODE      // tamaño del stream   // stream
     void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
     // pruebas.

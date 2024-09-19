@@ -18,18 +18,17 @@ void atenderKernel(void *void_args)
     switch ((int)paquete->op_code)
     {
     case PROCESS_CREATION:
-        uint8_t res = 0;
+        uint8_t res = (uint8_t)SUCCESS;
         recv(*socket_kernel_mem, &(paquete->buffer->size), sizeof(uint32_t), 0);
         paquete->buffer->stream = malloc(paquete->buffer->size);
         recv(*socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
-        // des-serealizando ---> Crear función.
+        // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
         uint32_t pid = buffer_read_uint32(paquete->buffer);
         uint32_t size = buffer_read_uint32(paquete->buffer);
-        // demorar tiempo y responder
-        log_info(log, "CREANDO PROCESO...");
+        // Demorar tiempo y responder
         int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
-        sleep(wait_time/1000);
-        log_info(log, "“## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>”", pid, size);
+        sleep(wait_time/1000); // Espera
+        log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
         send(*socket_kernel_mem, &res, sizeof(uint8_t), 0);
         break;
     case PROCESS_KILL:
