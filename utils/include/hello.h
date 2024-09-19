@@ -8,7 +8,10 @@
 #include <commons/log.h>
 #include <commons/collections/list.h>
 
-
+#define SIZEOF_UINT64 sizeof(uint64_t)
+#define SIZEOF_UINT32 sizeof(uint32_t)
+#define SIZEOF_UINT16 sizeof(uint16_t)
+#define SIZEOF_UINT8 sizeof(uint8_t)
 
 char *concatenate_route(char *path, char *module, char *file_format);
 t_config *levantar_config(char *path, char *module);

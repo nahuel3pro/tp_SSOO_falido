@@ -27,15 +27,16 @@ int main(int argc, char *argv[])
     //  proceso 0
     t_PCB pcb = pcb_create(1,process_size);
 
-    // Serializar el proceso. Buffer con los datos del PCB --- Faltan datos.
-    t_buffer *buffer = serializarProceso(pcb);
+    // Serializar el proceso. Buffer con los datos del PCB--- Faltan datos.
+    t_buffer *buffer = serializarProceso(pcb);         // --- Faltan las listas.
+    buffer->offset = 0;
 
     // empaquetar --------------- enviar pcb
     if (send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0)
     {
         log_info(log, "Proceso enviado");
         uint8_t res;
-        if (recv(socket_cliente, &res, sizeof(uint8_t), MSG_WAITALL) > 0 && res == (uint8_t)0)
+        if (recv(socket_cliente, &res, SIZEOF_UINT8, MSG_WAITALL) > 0 && res == (uint8_t)0)
         {
             log_info(log, "Proceso cargado exitosamente!");
         }

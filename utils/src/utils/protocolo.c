@@ -163,6 +163,7 @@ int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
 {
     // empaquetar ---------------
     t_paquete *paquete = crear_paquete(op_code);
+    paquete->buffer = buffer;
     // OP CODE      // tamaño del stream   // stream
     void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
     // pruebas.

@@ -14,12 +14,12 @@ void atenderKernel(void *void_args)
     crear_buffer(paquete);
 
     // Primero recibimos el codigo de operacion
-    recv(*socket_kernel_mem, &(paquete->op_code), sizeof(uint8_t), 0);
+    recv(*socket_kernel_mem, &(paquete->op_code), SIZEOF_UINT8, 0);
     switch ((int)paquete->op_code)
     {
     case PROCESS_CREATION:
         uint8_t res = (uint8_t)SUCCESS;
-        recv(*socket_kernel_mem, &(paquete->buffer->size), sizeof(uint32_t), 0);
+        recv(*socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
         paquete->buffer->stream = malloc(paquete->buffer->size);
         recv(*socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
         // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
