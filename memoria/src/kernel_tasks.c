@@ -30,6 +30,7 @@ void atenderKernel(void *void_args)
         sleep(wait_time); // Espera de un segundo
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
+        eliminar_paquete(paquete);
         break;
     case PROCESS_KILL:
         log_info(log, "Matando el proceso");

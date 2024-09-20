@@ -64,7 +64,13 @@ typedef enum
     PROCESS_CREATION,
     PROCESS_KILL,
     THREAD_CREATION,
-    MEMORY_DUMP
+    MEMORY_DUMP,
+    // --- CÓDIGO DE OPERACIÓN CPU-MEMORIA ---
+    GET_EXECUTION_CONTEXT,
+    UPDATE_CONTEXT,
+    GET_INSTRUCTION,
+    READ_MEM,
+    WRITE_MEM
 } op_code;
 
 typedef struct
