@@ -102,10 +102,11 @@ void enviar_paquete(t_paquete *paquete, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete *paquete);
 
-t_buffer *serializarProceso(t_PCB pcb);
+t_buffer *serializarProceso(t_PCB pcb, char *path);
 void *serializar_paquete(t_paquete *paquete, int bytes);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);
 void buffer_add_uint32(t_buffer *buffer, uint32_t data);
+void buffer_add_string(t_buffer *buffer, char *string);
 void buffer_read(t_buffer *buffer, void *data, uint32_t size);
 uint32_t buffer_read_uint32(t_buffer *buffer);
 uint8_t buffer_read_uint8(t_buffer *buffer);

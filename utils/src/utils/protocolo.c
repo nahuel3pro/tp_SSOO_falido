@@ -96,13 +96,16 @@ t_dictionary *dict_protocol()
     return dict;
 }
 // ------------ FALTAN SERIALIZAR LISTAS DE MUTEX E HILOS
-t_buffer *serializarProceso(t_PCB pcb)
+t_buffer *serializarProceso(t_PCB pcb, char *path)
 {
-    t_buffer *buffer = buffer_create(sizeof(uint32_t) * 2);
+    t_buffer *buffer = buffer_create(sizeof(uint32_t) * 3 + strlen(path) + 1);
 
     buffer_add_uint32(buffer, pcb->PID);
     buffer_add_uint32(buffer, pcb->size);
+    // añadiendo string
+    buffer_add_string(buffer, path);
 
+    buffer->offset = 0;
     return buffer;
 }
 
@@ -123,6 +126,16 @@ void buffer_add_uint32(t_buffer *buffer, uint32_t data)
 void buffer_add_uint8(t_buffer *buffer, uint8_t data)
 {
     buffer_add(buffer, &data, sizeof(uint8_t));
+}
+
+// Agrega string al buffer con un uint32_t adelante indicando su longitud
+void buffer_add_string(t_buffer *buffer, char *string)
+{
+    uint32_t str_length = strlen(string) + 1;
+    // Primero se agrega la cantidad de bytes.
+    buffer_add_uint32(buffer, str_length);
+    // Ahora, el string.
+    buffer_add(buffer, string, str_length);
 }
 
 // Guarda size bytes del principio del buffer en la dirección data y avanza el offset
@@ -156,8 +169,6 @@ char *buffer_read_string(t_buffer *buffer, uint32_t *length)
     buffer_read(buffer, string, *length);
     return string;
 }
-
-
 
 int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
 {
@@ -243,15 +254,15 @@ void eliminar_paquete(t_paquete *paquete)
     free(paquete);
 }
 
-void liberar_conexion(int socket_cliente)
-{
-    close(socket_cliente);
-}
-
 t_paquete *crear_paquete(op_code codigo) // CREA BUFFER
 {
     t_paquete *paquete = malloc(sizeof(t_paquete));
     paquete->op_code = codigo;
     crear_buffer(paquete); // Le inyecta un buffer
     return paquete;
+}
+
+void liberar_conexion(int socket_cliente)
+{
+    close(socket_cliente);
 }

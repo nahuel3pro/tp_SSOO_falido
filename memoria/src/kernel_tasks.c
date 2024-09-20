@@ -23,9 +23,11 @@ void atenderKernel(void *void_args)
         // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
         uint32_t pid = buffer_read_uint32(paquete->buffer);
         uint32_t size = buffer_read_uint32(paquete->buffer);
+        uint32_t str_size;
+        char *path_read = buffer_read_string(paquete->buffer, &str_size);
         // Demorar tiempo y responder
         int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
-        sleep(wait_time/1000); // Espera de un segundo
+        sleep(wait_time); // Espera de un segundo
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         break;
