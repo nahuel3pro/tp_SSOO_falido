@@ -109,6 +109,8 @@ void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete *paquete);
 
 t_buffer *serializarProceso(t_PCB pcb, char *path);
+t_buffer *serializar_registro(t_register registro);
+void deserealizar_registro(t_buffer *buffer, t_register *registro);
 void *serializar_paquete(t_paquete *paquete, int bytes);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);
 void buffer_add_uint32(t_buffer *buffer, uint32_t data);

@@ -8,6 +8,14 @@ void atenderCpu(void *void_args)
     int *socket_cpu_mem = args->fd;
     free(args);
 
+    // memoria pide este registro
+    t_register registro;
+    registro.PC = 3;
+    registro.AX = 80;
+    registro.BX = 44;
+    registro.CX = 2;
+    registro.EX = 99;
+
     while (1)
     {
         t_paquete *paquete = malloc(sizeof(t_paquete));
@@ -16,7 +24,14 @@ void atenderCpu(void *void_args)
         switch (paquete->op_code)
         {
         case GET_EXECUTION_CONTEXT:
+            // recibir el pid del proceso
+            // buscarlo en la lista de procesos creados
+            // devolverle su contexto de ejecución.
+            t_buffer *buffer = serializar_registro(registro);
             log_info(log, "Mandando contexto de ejecución...");
+            send(*socket_cpu_mem, buffer, buffer->size, 0);
+            eliminar_paquete(paquete);
+            buffer_destroy(buffer);
             break;
         case UPDATE_CONTEXT:
             log_info(log, "Actualizando contexto de ejecución...");
@@ -35,3 +50,4 @@ void atenderCpu(void *void_args)
             break;
         }
     }
+}

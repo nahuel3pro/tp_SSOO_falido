@@ -109,6 +109,31 @@ t_buffer *serializarProceso(t_PCB pcb, char *path)
     return buffer;
 }
 
+t_buffer *serializar_registro(t_register registro)
+{
+    t_buffer *buffer = buffer_create(sizeof(t_register));
+    uint32_t *reg_ptr = (uint32_t *)&registro;
+    size_t num_fields = sizeof(t_register) / sizeof(uint32_t);
+
+    for (size_t i = 0; i < num_fields; i++)
+    {
+        buffer_add_uint32(buffer, reg_ptr[i]);
+    }
+    buffer->offset = 0;
+    return buffer;
+}
+
+void deserealizar_registro(t_buffer *buffer, t_register* registro)
+{
+    uint32_t *reg_ptr = (uint32_t *)&registro;
+    size_t num_fields = sizeof(t_register) / sizeof(uint32_t);
+
+    for (size_t i = 0; i < num_fields; i++)
+    {
+        reg_ptr[i] = buffer_read_uint32(buffer);
+    }
+}
+
 // Agrega un stream al buffer en la posición actual y avanza el offset
 void buffer_add(t_buffer *buffer, void *data, uint32_t size)
 {
