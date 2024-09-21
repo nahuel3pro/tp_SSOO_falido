@@ -102,6 +102,7 @@ void buffer_destroy(t_buffer *buffer);
 t_dictionary *dict_protocol();
 
 void enviar_mensaje(char *mensaje, int socket_cliente);
+void send_data(op_code op_code, t_buffer *buffer, int socket_cliente);
 t_paquete *crear_paquete(op_code codigo);
 void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
 void enviar_paquete(t_paquete *paquete, int socket_cliente);

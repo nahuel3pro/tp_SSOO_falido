@@ -14,40 +14,45 @@ void atenderCpu(void *void_args)
     registro.AX = 80;
     registro.BX = 44;
     registro.CX = 2;
+    registro.DX = 222;
     registro.EX = 99;
+    registro.FX = 230;
+    registro.GX = 666;
+    registro.HX = 332;
+    registro.base = 24;
+    registro.limite = 250000;
 
-    while (1)
+    t_paquete *paquete = malloc(sizeof(t_paquete));
+    crear_buffer(paquete);
+    recv(*socket_cpu_mem, &(paquete->op_code), SIZEOF_UINT8, MSG_WAITALL);
+    switch (paquete->op_code)
     {
-        t_paquete *paquete = malloc(sizeof(t_paquete));
-        crear_buffer(paquete);
-        recv(*socket_cpu_mem, &(paquete->op_code), SIZEOF_UINT8, 0);
-        switch (paquete->op_code)
-        {
-        case GET_EXECUTION_CONTEXT:
-            // recibir el pid del proceso
-            // buscarlo en la lista de procesos creados
-            // devolverle su contexto de ejecución.
-            t_buffer *buffer = serializar_registro(registro);
-            log_info(log, "Mandando contexto de ejecución...");
-            send(*socket_cpu_mem, buffer, buffer->size, 0);
-            eliminar_paquete(paquete);
-            buffer_destroy(buffer);
-            break;
-        case UPDATE_CONTEXT:
-            log_info(log, "Actualizando contexto de ejecución...");
-            break;
-        case GET_INSTRUCTION:
-            log_info(log, "Obteniendo instrucción de ejecución...");
-            break;
-        case READ_MEM:
-            log_info(log, "Leyendo la memoria...");
-            break;
-        case WRITE_MEM:
-            log_info(log, "Escribiendo en memoria...");
-            break;
-        default:
-            // lo que me mandaste no tiene sentido
-            break;
-        }
+    case GET_EXECUTION_CONTEXT:
+        // recibir el pid del proceso
+        // buscarlo en la lista de procesos creados
+        // devolverle su contexto de ejecución.
+        t_buffer *buffer = serializar_registro(registro);
+        send_data(69, buffer, *socket_cpu_mem);
+        log_info(log, "Mandando contexto de ejecución...");
+        eliminar_paquete(paquete);
+        buffer_destroy(buffer);
+        break;
+    case UPDATE_CONTEXT:
+        log_info(log, "Actualizando contexto de ejecución...");
+        break;
+    case GET_INSTRUCTION:
+        log_info(log, "Obteniendo instrucción de ejecución...");
+        break;
+    case READ_MEM:
+        log_info(log, "Leyendo la memoria...");
+        break;
+    case WRITE_MEM:
+        log_info(log, "Escribiendo en memoria...");
+        break;
+    default:
+        // lo que me mandaste no tiene sentido
+        break;
     }
+    close(socket_cpu_mem);
+    free(socket_cpu_mem);
 }

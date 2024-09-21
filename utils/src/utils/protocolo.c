@@ -112,26 +112,37 @@ t_buffer *serializarProceso(t_PCB pcb, char *path)
 t_buffer *serializar_registro(t_register registro)
 {
     t_buffer *buffer = buffer_create(sizeof(t_register));
-    uint32_t *reg_ptr = (uint32_t *)&registro;
-    size_t num_fields = sizeof(t_register) / sizeof(uint32_t);
 
-    for (size_t i = 0; i < num_fields; i++)
-    {
-        buffer_add_uint32(buffer, reg_ptr[i]);
-    }
+    buffer_add_uint32(buffer, registro.PC);
+    buffer_add_uint32(buffer, registro.AX);
+    buffer_add_uint32(buffer, registro.BX);
+    buffer_add_uint32(buffer, registro.CX);
+    buffer_add_uint32(buffer, registro.DX);
+    buffer_add_uint32(buffer, registro.EX);
+    buffer_add_uint32(buffer, registro.FX);
+    buffer_add_uint32(buffer, registro.GX);
+    buffer_add_uint32(buffer, registro.HX);
+    buffer_add_uint32(buffer, registro.base);
+    buffer_add_uint32(buffer, registro.limite);
     buffer->offset = 0;
+
     return buffer;
 }
 
-void deserealizar_registro(t_buffer *buffer, t_register* registro)
+void deserealizar_registro(t_buffer *buffer, t_register *registro)
 {
-    uint32_t *reg_ptr = (uint32_t *)&registro;
-    size_t num_fields = sizeof(t_register) / sizeof(uint32_t);
 
-    for (size_t i = 0; i < num_fields; i++)
-    {
-        reg_ptr[i] = buffer_read_uint32(buffer);
-    }
+    registro->PC = buffer_read_uint32(buffer);
+    registro->AX = buffer_read_uint32(buffer);
+    registro->BX = buffer_read_uint32(buffer);
+    registro->CX = buffer_read_uint32(buffer);
+    registro->DX = buffer_read_uint32(buffer);
+    registro->EX = buffer_read_uint32(buffer);
+    registro->FX = buffer_read_uint32(buffer);
+    registro->GX = buffer_read_uint32(buffer);
+    registro->HX = buffer_read_uint32(buffer);
+    registro->base = buffer_read_uint32(buffer);
+    registro->limite = buffer_read_uint32(buffer);
 }
 
 // Agrega un stream al buffer en la posición actual y avanza el offset
@@ -208,6 +219,19 @@ int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
     int bytes = send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
 
     return bytes;
+}
+
+void send_data(op_code op_code, t_buffer *buffer, int socket_cliente)
+{
+    // empaquetar ---------------
+    t_paquete *paquete = crear_paquete(op_code);
+    paquete->buffer = buffer;
+    // OP CODE      // tamaño del stream   // stream
+    void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
+    // pruebas.
+
+    // Por último enviamos           OP_CODE      // Tamaño del payload // Payload
+    send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
 }
 
 void *serializar_paquete(t_paquete *paquete, int bytes)
