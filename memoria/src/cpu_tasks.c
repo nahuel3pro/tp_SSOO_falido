@@ -31,7 +31,10 @@ void atenderCpu(void *void_args)
         // recibir el pid del proceso
         // buscarlo en la lista de procesos creados
         // devolverle su contexto de ejecución.
+        uint32_t PID;
+        log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:<TID>)", PID);
         t_buffer *buffer = serializar_registro(registro);
+        wait();
         send_data(69, buffer, *socket_cpu_mem);
         log_info(log, "Mandando contexto de ejecución...");
         eliminar_paquete(paquete);
@@ -41,7 +44,12 @@ void atenderCpu(void *void_args)
         log_info(log, "Actualizando contexto de ejecución...");
         break;
     case GET_INSTRUCTION:
+        int last_line_read;
+        char *path = "/home/utnso/Desktop/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
         log_info(log, "Obteniendo instrucción de ejecución...");
+        char *line;
+        line = get_next_line(path, &last_line_read);
+        log_info(log, line);
         break;
     case READ_MEM:
         log_info(log, "Leyendo la memoria...");

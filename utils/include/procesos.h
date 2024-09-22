@@ -11,10 +11,18 @@ typedef enum
     LOW
 } thrd_priority;
 
+typedef enum{
+    NEW,
+    READY,
+    EXEC,
+    BLOCKED
+} process_state;
+
 typedef struct
 {
     uint32_t PID;
     t_list *TIDs;
+    process_state state;
     // t_list *mutex; Lo dejo comentado para cuando lo necesitemos.
     uint32_t size;
 } *t_PCB;

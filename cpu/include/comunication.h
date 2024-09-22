@@ -5,6 +5,6 @@
 #include "../../utils/include/protocolo.h"
 #include "../../utils/include/hello.h"
 
-void get_context(t_register *registro, int socket_conection);
+void get_context(uint32_t PID, t_register *registro, int socket_conection);
 
 #endif

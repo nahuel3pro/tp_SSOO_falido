@@ -2,6 +2,8 @@
 #define CONEXION_H_
 
 #include "../include/protocolo.h"
+#include "../include/globals.h"
+#include <commons/config.h>
 
 	/**
 	* @brief Examina el módulo que está intentando conectarse al servidor.
@@ -15,6 +17,7 @@
 	* @endcode
 	*/
 int recv_handshake_memoria(t_log* log, int server_fd);
+void wait();
 
 #endif
 

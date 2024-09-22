@@ -1,6 +1,7 @@
 #include "../include/main.h"
 t_config *config;
 t_log *log;
+t_list *procesos;
 
 int main(int argc, char *argv[])
 {
@@ -9,7 +10,7 @@ int main(int argc, char *argv[])
 
     config = levantar_config(getcwd(NULL, 0), "memoria");
     log = levantar_log(getcwd(NULL, 0), "memoria", config_get_string_value(config, "LOG_LEVEL"));
-    
+    procesos = list_create();
 
     // Memoria como sv
     server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA"));

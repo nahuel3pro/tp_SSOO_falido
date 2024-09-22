@@ -16,6 +16,7 @@ void atenderKernel(void *void_args)
     switch ((int)paquete->op_code)
     {
     case PROCESS_CREATION:
+        // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
         uint8_t res = (uint8_t)SUCCESS;
         recv(*socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
         paquete->buffer->stream = malloc(paquete->buffer->size);
@@ -28,6 +29,12 @@ void atenderKernel(void *void_args)
         // Demorar tiempo y responder
         int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
         sleep(wait_time); // Espera de un segundo
+        t_PCB pcb;
+        pcb->TIDs = list_create();
+        t_TCB tcb = malloc(sizeof(t_TCB));
+        tcb->priority = HIGH;
+        tcb->TID = 0;
+        list_add(pcb->TIDs, tcb);
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         eliminar_paquete(paquete);

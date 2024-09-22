@@ -1,6 +1,6 @@
 #include "../include/comunication.h"
 
-void get_context(t_register *registro, int socket_conection)
+void get_context(uint32_t PID, t_register *registro, int socket_conection)
 {
     t_paquete *paquete = malloc(sizeof(t_paquete));
     crear_buffer(paquete);

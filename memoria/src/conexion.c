@@ -21,3 +21,7 @@ int recv_handshake_memoria(t_log *log, int server_fd)
         return -1;
     }
 }
+
+void wait(){
+    sleep(config_get_int_value(config,"RETARDO_RESPUESTA") + 2);
+}

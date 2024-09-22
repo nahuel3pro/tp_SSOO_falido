@@ -3,6 +3,7 @@
 
 #include "main.h"
 #include"../include/server.h"
+#include"../include/tools.h"
 #include<commons/log.h>
 #include<commons/config.h>
 

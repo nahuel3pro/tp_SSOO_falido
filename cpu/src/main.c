@@ -20,10 +20,12 @@ int main(int argc, char *argv[])
 
     if (send_handshake(log, socket_cliente, "CPU/memoria", CPU))
     {
-        t_register *registro = malloc(sizeof(t_register));
-        get_context(registro, socket_cliente);
+        /*  t_register *registro = malloc(sizeof(t_register));
+         get_context(1, registro, socket_cliente); */
 
-        sleep(1);
+        uint8_t pedido = (uint8_t)GET_INSTRUCTION;
+        send(socket_cliente, &pedido, SIZEOF_UINT8, 0);
+        readline(">");
     }
 
     // readline("> ");
