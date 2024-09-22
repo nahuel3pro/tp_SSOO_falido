@@ -11,28 +11,13 @@ typedef enum
     LOW
 } thrd_priority;
 
-typedef enum{
+typedef enum
+{
     NEW,
     READY,
     EXEC,
     BLOCKED
 } process_state;
-
-typedef struct
-{
-    uint32_t PID;
-    t_list *TIDs;
-    process_state state;
-    // t_list *mutex; Lo dejo comentado para cuando lo necesitemos.
-    uint32_t size;
-} *t_PCB;
-
-typedef struct
-{
-    uint32_t TID;
-    thrd_priority priority;
-} *t_TCB;
-
 typedef struct
 {
     uint32_t PC;
@@ -47,6 +32,22 @@ typedef struct
     uint32_t base;
     uint32_t limite;
 } t_register;
+typedef struct
+{
+    uint32_t PID;
+    t_list *TIDs;
+    process_state state;
+    // t_list *mutex; Lo dejo comentado para cuando lo necesitemos.
+    uint32_t size;
+} *t_PCB;
+
+typedef struct
+{
+    uint32_t TID;
+    thrd_priority priority;
+    t_list *instructions;
+    t_register *registers;
+} *t_TCB;
 
 t_PCB pcb_create(int PID, int size);
 t_TCB tcb_create(int TID, thrd_priority priority);

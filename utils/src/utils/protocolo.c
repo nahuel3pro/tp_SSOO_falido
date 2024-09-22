@@ -221,18 +221,6 @@ int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
     return bytes;
 }
 
-void send_data(op_code op_code, t_buffer *buffer, int socket_cliente)
-{
-    // empaquetar ---------------
-    t_paquete *paquete = crear_paquete(op_code);
-    paquete->buffer = buffer;
-    // OP CODE      // tamaño del stream   // stream
-    void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
-    // pruebas.
-
-    // Por último enviamos           OP_CODE      // Tamaño del payload // Payload
-    send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
-}
 
 void *serializar_paquete(t_paquete *paquete, int bytes)
 {
@@ -294,6 +282,19 @@ void enviar_paquete(t_paquete *paquete, int socket_cliente)
     send(socket_cliente, a_enviar, bytes, 0);
 
     free(a_enviar);
+}
+
+void send_data(op_code op_code, t_buffer *buffer, int socket_cliente)
+{
+    // empaquetar ---------------
+    t_paquete *paquete = crear_paquete(op_code);
+    paquete->buffer = buffer;
+    // OP CODE      // tamaño del stream   // stream
+    void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
+    // pruebas.
+
+    // Por último enviamos           OP_CODE      // Tamaño del payload // Payload
+    send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
 }
 
 void eliminar_paquete(t_paquete *paquete)

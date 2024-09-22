@@ -44,12 +44,26 @@ void atenderCpu(void *void_args)
         log_info(log, "Actualizando contexto de ejecución...");
         break;
     case GET_INSTRUCTION:
-        int last_line_read;
-        char *path = "/home/utnso/Desktop/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
-        log_info(log, "Obteniendo instrucción de ejecución...");
-        char *line;
-        line = get_next_line(path, &last_line_read);
-        log_info(log, line);
+        // CPU NOS MANDA, SOLO MANDAR ESTO.
+        int pib = 1;
+        int tid = 0;
+        int pc = 3;
+
+        // Obtener registro de PCB y TID
+        t_PCB pcb_buffer = malloc(sizeof(t_PCB));
+        pcb_buffer = list_get(process_list, pib);
+        t_TCB tcb_buffer = malloc(sizeof(t_TCB));
+        tcb_buffer = list_get(pcb_buffer->TIDs,tid);
+
+        // obtener instrucción de PC
+        char* instrution = list_get(tcb_buffer->instructions, pc);
+
+        // Serializar contexto (registros) e instrucción
+        t_buffer *buffer = serializar_registro(tcb_buffer->registers);
+        buffer_add_string(buffer, instrution);
+        send_data(69, buffer, *socket_cpu_mem);
+
+        log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
         break;
     case READ_MEM:
         log_info(log, "Leyendo la memoria...");

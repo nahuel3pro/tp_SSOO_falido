@@ -1,6 +1,6 @@
 #include "../include/tools.h"
 
-char *get_next_line(const char *filename, int* last_line_read)
+char *get_next_line(const char *filename)
 {
     static FILE *file = NULL;
     static char buffer[1024];
@@ -19,7 +19,6 @@ char *get_next_line(const char *filename, int* last_line_read)
     // Read the next line from the file
     if (fgets(buffer, sizeof(buffer), file) != NULL)
     {
-        *last_line_read = ftell(file);
         return buffer; // Return the buffer containing the line
     }
     else

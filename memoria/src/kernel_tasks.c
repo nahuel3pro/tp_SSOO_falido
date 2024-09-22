@@ -25,17 +25,24 @@ void atenderKernel(void *void_args)
         uint32_t pid = buffer_read_uint32(paquete->buffer);
         uint32_t size = buffer_read_uint32(paquete->buffer);
         uint32_t str_size;
-        char *path_read = buffer_read_string(paquete->buffer, &str_size);
+        char *path_file = buffer_read_string(paquete->buffer, &str_size);
         // Demorar tiempo y responder
         int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
         sleep(wait_time); // Espera de un segundo
-        t_PCB pcb;
+        // cargar pcb recibido.
+        t_PCB pcb = malloc(sizeof(t_PCB));
+        pcb->PID = pid;
+        pcb->size = size;
         pcb->TIDs = list_create();
         t_TCB tcb = malloc(sizeof(t_TCB));
         tcb->priority = HIGH;
-        tcb->TID = 0;
+        tcb->TID = 0; // ---- HARDCODEADO, RECIBIR EL TID Y PRIORIDAD TAMBIÉN.
+        tcb->instructions = list_create();
+        load_list_instructions(tcb->instructions, path_file);
+        tcb->registers = initiate_registers();
         list_add(pcb->TIDs, tcb);
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
+        list_add(process_list, pcb);
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         eliminar_paquete(paquete);
         break;
@@ -55,4 +62,33 @@ void atenderKernel(void *void_args)
     // Se cierra la conexión con el kernel
     close(*socket_kernel_mem);
     free(socket_kernel_mem);
+}
+
+void load_list_instructions(t_list *list_instructions, char *path)
+{
+    char *line;
+
+    for (int i = 0; (line = get_next_line(path)) != NULL; i++)
+    {
+        char *add = malloc(string_length(line) + 1);
+        memcpy(add, line, string_length(line) + 1);
+        list_add(list_instructions, add);
+    }
+}
+
+t_register *initiate_registers()
+{
+    t_register *registro = malloc(sizeof(t_register));
+    registro->AX = 0;
+    registro->BX = 0;
+    registro->CX = 0;
+    registro->DX = 0;
+    registro->EX = 0;
+    registro->FX = 0;
+    registro->GX = 0;
+    registro->HX = 0;
+    registro->base = 0;
+    registro->limite = 0;
+
+    return registro;
 }

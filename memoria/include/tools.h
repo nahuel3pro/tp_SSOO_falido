@@ -3,6 +3,6 @@
 
 #include <stdio.h>
 
-char *get_next_line(const char *filename, int *last_line_read);
+char *get_next_line(const char *filename);
 
 #endif
