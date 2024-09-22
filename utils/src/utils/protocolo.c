@@ -124,7 +124,7 @@ t_buffer *serializar_registro(t_register registro)
     buffer_add_uint32(buffer, registro.HX);
     buffer_add_uint32(buffer, registro.base);
     buffer_add_uint32(buffer, registro.limite);
-    buffer->offset = 0;
+    //buffer->offset = 0;
 
     return buffer;
 }

@@ -23,8 +23,29 @@ int main(int argc, char *argv[])
         /*  t_register *registro = malloc(sizeof(t_register));
          get_context(1, registro, socket_cliente); */
 
-        uint8_t pedido = (uint8_t)GET_INSTRUCTION;
-        send(socket_cliente, &pedido, SIZEOF_UINT8, 0);
+
+        char* instruccion = "SET AX 1";
+
+        char** array = string_split(instruccion, " ");
+        t_dictionary* dict = dict_protocol();
+        int op_code = dictionary_get(dict, array[0]);
+        switch (op_code)
+        {
+        case INSTRUCCION_SET:
+            log_info(log, "Se recibio la instruccion SET");
+            log_debug(log, "Se recibio la instruccion SET");
+            log_trace(log, "Se recibio la instruccion SET");
+            log_error(log, "Se recibio la instruccion SET");
+            asignar_registro_beta(array[1], atoi(array[2]) );
+            
+            array[1];
+            break;
+        
+        default:
+            break;
+        }
+
+
         readline(">");
     }
 

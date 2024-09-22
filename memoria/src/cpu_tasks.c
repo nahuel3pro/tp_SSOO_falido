@@ -44,24 +44,33 @@ void atenderCpu(void *void_args)
         log_info(log, "Actualizando contexto de ejecución...");
         break;
     case GET_INSTRUCTION:
-        // CPU NOS MANDA, SOLO MANDAR ESTO.
-        int pib = 1;
-        int tid = 0;
-        int pc = 3;
+        // // CPU NOS MANDA, SOLO MANDAR ESTO.
+        // int pib = 1;
+        // int tid = 0;
+        // int pc = 3;
 
-        // Obtener registro de PCB y TID
-        t_PCB pcb_buffer = malloc(sizeof(t_PCB));
-        pcb_buffer = list_get(process_list, pib);
-        t_TCB tcb_buffer = malloc(sizeof(t_TCB));
-        tcb_buffer = list_get(pcb_buffer->TIDs,tid);
+        // // Obtener registro de PCB y TID
+        // t_PCB pcb_buffer = malloc(sizeof(t_PCB));
+        // pcb_buffer = list_get(process_list, pib);
+        // t_TCB tcb_buffer = malloc(sizeof(t_TCB));
+        // tcb_buffer = list_get(pcb_buffer->TIDs,tid);
 
-        // obtener instrucción de PC
-        char* instrution = list_get(tcb_buffer->instructions, pc);
+        // // obtener instrucción de PC
+        // char* instrution = list_get(tcb_buffer->instructions, pc);
 
         // Serializar contexto (registros) e instrucción
-        t_buffer *buffer = serializar_registro(tcb_buffer->registers);
-        buffer_add_string(buffer, instrution);
-        send_data(69, buffer, *socket_cpu_mem);
+        char* path = "/home/utnso/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
+        t_register* registro_ = initiate_registers();
+        // obtener instrucción de PC
+        char* instrution = "SET AX 1";
+
+        
+        t_buffer *buffer1 = serializar_registro(*registro_);
+        //uint32_t a = buffer_read_uint32(buffer1);
+        buffer_add_string(buffer1, instrution);
+        buffer1->offset = 0;
+
+        send_data(69, buffer1, *socket_cpu_mem);
 
         log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
         break;

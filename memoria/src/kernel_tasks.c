@@ -79,6 +79,7 @@ void load_list_instructions(t_list *list_instructions, char *path)
 t_register *initiate_registers()
 {
     t_register *registro = malloc(sizeof(t_register));
+    registro->PC = 0;
     registro->AX = 0;
     registro->BX = 0;
     registro->CX = 0;

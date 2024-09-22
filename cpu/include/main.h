@@ -8,8 +8,10 @@
 #include <../include/hello.h>
 #include <../include/protocolo.h>
 #include <readline/readline.h>
+#include <commons/string.h>
+#include "tools.h"
+#include "globals.h"
 
-extern t_config *config;
-extern t_log *log;
+
 
 #endif
