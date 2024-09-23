@@ -31,7 +31,11 @@
       "memory_resource": "c",
       "memory": "c",
       "ostream": "c",
-      "streambuf": "c"
+      "streambuf": "c",
+      "array": "c",
+      "string_view": "c",
+      "initializer_list": "c",
+      "utility": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
   }

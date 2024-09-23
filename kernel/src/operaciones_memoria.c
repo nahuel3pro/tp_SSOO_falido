@@ -1,1 +1,1 @@
-#include"../include/operaciones_memoria.h"
+#include "../include/operaciones_memoria.h"

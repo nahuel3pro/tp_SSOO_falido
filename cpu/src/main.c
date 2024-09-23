@@ -23,11 +23,14 @@ int main(int argc, char *argv[])
         /*  t_register *registro = malloc(sizeof(t_register));
          get_context(1, registro, socket_cliente); */
 
+        uint32_t pedido = (uint32_t)GET_INSTRUCTION;
+        send(socket_cliente, &pedido, SIZEOF_UINT32, 0);
+        char *inst = recv_instruction(socket_cliente);
 
-        char* instruccion = "SET AX 1";
+        char *instruccion = "SET AX 1";
 
-        char** array = string_split(instruccion, " ");
-        t_dictionary* dict = dict_protocol();
+        char **array = string_split(instruccion, " ");
+        t_dictionary *dict = dict_protocol();
         int op_code = dictionary_get(dict, array[0]);
         switch (op_code)
         {
@@ -36,15 +39,14 @@ int main(int argc, char *argv[])
             log_debug(log, "Se recibio la instruccion SET");
             log_trace(log, "Se recibio la instruccion SET");
             log_error(log, "Se recibio la instruccion SET");
-            asignar_registro_beta(array[1], atoi(array[2]) );
-            
+            asignar_registro_beta(array[1], atoi(array[2]));
+
             array[1];
             break;
-        
+
         default:
             break;
         }
-
 
         readline(">");
     }

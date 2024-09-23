@@ -8,5 +8,7 @@
 #include<commons/config.h>
 
 void atenderCpu(void* void_args);
+void execution_context(int socket);
+void get_instruction(int socket);
 
 #endif

@@ -103,14 +103,14 @@ t_dictionary *dict_protocol();
 
 void enviar_mensaje(char *mensaje, int socket_cliente);
 void send_data(op_code op_code, t_buffer *buffer, int socket_cliente);
-t_paquete *crear_paquete(op_code codigo);
+t_paquete *crear_paquete(uint8_t codigo);
 void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
 void enviar_paquete(t_paquete *paquete, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete *paquete);
 
 t_buffer *serializarProceso(t_PCB pcb, char *path);
-t_buffer *serializar_registro(t_register registro);
+void serializar_registro(t_buffer* buffer,t_register registro);
 void deserealizar_registro(t_buffer *buffer, t_register *registro);
 void *serializar_paquete(t_paquete *paquete, int bytes);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);

@@ -7,6 +7,7 @@
 #include <../include/server.h>
 #include <../include/hello.h>
 #include <../include/protocolo.h>
+#include <../include/operaciones_memoria.h>
 #include <readline/readline.h>
 #include <commons/string.h>
 #include "tools.h"

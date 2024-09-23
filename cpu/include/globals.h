@@ -4,6 +4,9 @@
 #include<commons/config.h>
 #include<commons/log.h>
 #include<commons/collections/list.h>
+#include"../../utils/include/protocolo.h"
+#include"../../utils/include/hello.h"
+#include"../../utils/include/server.h"
 #include<stdlib.h>
 
 extern t_config *config;

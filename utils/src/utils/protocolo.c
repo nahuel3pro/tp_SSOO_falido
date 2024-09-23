@@ -109,10 +109,8 @@ t_buffer *serializarProceso(t_PCB pcb, char *path)
     return buffer;
 }
 
-t_buffer *serializar_registro(t_register registro)
+void serializar_registro(t_buffer *buffer, t_register registro)
 {
-    t_buffer *buffer = buffer_create(sizeof(t_register));
-
     buffer_add_uint32(buffer, registro.PC);
     buffer_add_uint32(buffer, registro.AX);
     buffer_add_uint32(buffer, registro.BX);
@@ -124,9 +122,7 @@ t_buffer *serializar_registro(t_register registro)
     buffer_add_uint32(buffer, registro.HX);
     buffer_add_uint32(buffer, registro.base);
     buffer_add_uint32(buffer, registro.limite);
-    //buffer->offset = 0;
-
-    return buffer;
+    // buffer->offset = 0;
 }
 
 void deserealizar_registro(t_buffer *buffer, t_register *registro)
@@ -217,10 +213,9 @@ int send_pcb(t_PCB pcb, op_code op_code, t_buffer *buffer, int socket_cliente)
 
     // Por último enviamos
     int bytes = send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
-
+    free(a_enviar);
     return bytes;
 }
-
 
 void *serializar_paquete(t_paquete *paquete, int bytes)
 {
@@ -295,6 +290,11 @@ void send_data(op_code op_code, t_buffer *buffer, int socket_cliente)
 
     // Por último enviamos           OP_CODE      // Tamaño del payload // Payload
     send(socket_cliente, a_enviar, sizeof(uint8_t) + sizeof(uint32_t) + buffer->size, 0);
+    free(buffer->stream);
+    free(buffer);
+    free(paquete);
+    //free(a_enviar);
+    
 }
 
 void eliminar_paquete(t_paquete *paquete)
@@ -304,10 +304,10 @@ void eliminar_paquete(t_paquete *paquete)
     free(paquete);
 }
 
-t_paquete *crear_paquete(op_code codigo) // CREA BUFFER
+t_paquete *crear_paquete(uint8_t codigo) // CREA BUFFER
 {
     t_paquete *paquete = malloc(sizeof(t_paquete));
-    paquete->op_code = codigo;
+    paquete->op_code = (uint8_t)codigo;
     crear_buffer(paquete); // Le inyecta un buffer
     return paquete;
 }
