@@ -13,6 +13,8 @@ char *recv_instruction(int socket_cliente)
     // Se recibe el contexto de ejecución.
     uint32_t str_size;
     char *inst = buffer_read_string(paquete->buffer, &str_size);
+    log_trace(log, "Instrucción recibida: %s", inst);
 
+    eliminar_paquete(paquete);
     return inst;
 }

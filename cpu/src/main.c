@@ -35,10 +35,6 @@ int main(int argc, char *argv[])
         switch (op_code)
         {
         case INSTRUCCION_SET:
-            log_info(log, "Se recibio la instruccion SET");
-            log_debug(log, "Se recibio la instruccion SET");
-            log_trace(log, "Se recibio la instruccion SET");
-            log_error(log, "Se recibio la instruccion SET");
             asignar_registro_beta(array[1], atoi(array[2]));
 
             array[1];
