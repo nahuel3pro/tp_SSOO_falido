@@ -37,35 +37,59 @@
 
 // }
 
-void asignar_registro_beta(char *registro_in, int valor)
+void set_registro(t_register* registros, char *registro_in, int valor)
 {
+    if(!strcmp(registro_in,"PC"))
+        registros->PC = valor;
 
     if(!strcmp(registro_in,"AX"))
-    {
-        log_info(log, "Seteando ax a %d", valor);           
-    }
-    // if(!strcmp(registro_in,"BX"))
-        
-    // if(!strcmp(registro_in,"CX"))
-            
-    // if(!strcmp(registro_in,"DX"))
-        
-    // if(!strcmp(registro_in,"PC"))
-            
-    // if(!strcmp(registro_in,"DI"))
-        
-    // if(!strcmp(registro_in,"SI"))
-            
-    // if(!strcmp(registro_in,"EAX"))
-        
+        registros->AX = valor;
+    
+    if(!strcmp(registro_in,"BX"))
+        registros->BX = valor;
 
-    // if(!strcmp(registro_in,"EBX"))
-        
+    if(!strcmp(registro_in,"CX"))
+        registros->CX = valor;
+    
+    if(!strcmp(registro_in,"DX"))
+        registros->DX = valor;
 
-    // if(!strcmp(registro_in,"ECX"))
-        
+    if(!strcmp(registro_in,"EX"))
+        registros->EX = valor;
 
-    // if(!strcmp(registro_in,"EDX"))
-        
+    if(!strcmp(registro_in,"FX"))
+        registros->FX = valor;
 
+    if(!strcmp(registro_in,"GX"))
+        registros->GX = valor;
+
+    if(!strcmp(registro_in,"HX"))
+        registros->HX = valor;
+
+}
+
+char obtener_registro(char *registro_in, t_register *registros)
+{
+    uint32_t valor =0;
+    if(!strcmp("PC", registro_in))
+        valor = registros->PC;
+    if(!strcmp("AX", registro_in))
+        valor = registros->AX;
+    if(!strcmp("BX", registro_in))
+        valor = registros->BX;
+    if(!strcmp("CX", registro_in))
+        valor = registros->CX;
+    if(!strcmp("DX", registro_in))
+        valor = registros->DX;
+    if(!strcmp("EX", registro_in))
+        valor = registros->EX;
+    if(!strcmp("FX", registro_in))
+        valor = registros->FX;
+    if(!strcmp("GX", registro_in))
+        valor = registros->GX;
+    if(!strcmp("HX", registro_in))
+        valor = registros->HX;
+
+
+    return valor;
 }
