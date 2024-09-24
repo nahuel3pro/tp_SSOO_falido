@@ -22,6 +22,6 @@ int recv_handshake_memoria(t_log *log, int server_fd)
     }
 }
 
-void wait(){
-    sleep(config_get_int_value(config,"RETARDO_RESPUESTA") + 2);
+void retardo_respuesta(){
+    usleep((useconds_t)config_get_int_value(config,"RETARDO_RESPUESTA") * 1000);
 }

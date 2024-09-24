@@ -17,7 +17,7 @@
 	* @endcode
 	*/
 int recv_handshake_memoria(t_log* log, int server_fd);
-void wait();
+void retardo_respuesta();
 
 #endif
 

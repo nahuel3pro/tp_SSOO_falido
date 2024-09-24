@@ -62,7 +62,7 @@ void execution_context(int socket)
     t_buffer *buffer = buffer_create(sizeof(t_register));
     serializar_registro(buffer, registro);
     buffer->offset = 0;
-    wait();
+    retardo_respuesta();
     send_data(69, buffer, socket);
     log_info(log, "Mandando contexto de ejecución...");
     // buffer_destroy(buffer);
@@ -94,7 +94,7 @@ void get_instruction(int socket)
 
     buffer1->offset = 0;
 
-    wait();
+    retardo_respuesta();
     send_data(69, buffer1, socket);
 
     //log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
