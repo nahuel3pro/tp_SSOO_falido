@@ -36,7 +36,7 @@ void atenderCpu(void *void_args)
         break;
     }
     // eliminar_paquete(paquete);
-    close(socket_cpu_mem);
+    close(*socket_cpu_mem);
     free(socket_cpu_mem);
     // free(args);
 }
@@ -97,7 +97,7 @@ void get_instruction(int socket)
     // t_PCB pcb_buffer = malloc(sizeof(t_PCB));       UNA VEZ CREADAS LAS ESTRUCTURAS
     // pcb_buffer = list_get(process_list, pib);       PARA GUARDAR LOS PROCESOS POR PARTE
     //                                                 DEL KERNEL.
-    t_TCB tcb_buffer = malloc(sizeof(t_TCB));
+    //t_TCB tcb_buffer = malloc(sizeof(t_TCB));
     // tcb_buffer = list_get(pcb_buffer->TIDs,tid);
     // // obtener instrucción del TID
     // char* instruction = list_get(tcb_buffer->instructions, pc);
@@ -120,5 +120,5 @@ void get_instruction(int socket)
 
     buffer_destroy(buffer_send);
 
-    // log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
+    //log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
 }

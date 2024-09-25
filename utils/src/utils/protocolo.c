@@ -264,6 +264,8 @@ void enviar_buffer(t_buffer *buffer, int socket_cliente)
     memcpy(magic + desplazamiento, buffer->stream, buffer->size);
 
     send(socket_cliente, magic, buffer->size + sizeof(uint32_t) * 2, 0);
+
+    free(magic);
 }
 
 void crear_buffer(t_paquete *paquete)

@@ -13,11 +13,11 @@ void atenderKernel(void *void_args)
 
     // Primero recibimos el codigo de operacion
     recv(*socket_kernel_mem, &(paquete->op_code), SIZEOF_UINT8, 0);
+    uint8_t res = (uint8_t)SUCCESS;
     switch ((int)paquete->op_code)
     {
     case PROCESS_CREATION:
         // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
-        uint8_t res = (uint8_t)SUCCESS;
         recv(*socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
         paquete->buffer->stream = malloc(paquete->buffer->size);
         recv(*socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
@@ -44,22 +44,25 @@ void atenderKernel(void *void_args)
         log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
         list_add(process_list, pcb);
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
-        eliminar_paquete(paquete);
         break;
     case PROCESS_KILL:
         log_info(log, "Matando el proceso");
+        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         break;
     case THREAD_CREATION:
         log_info(log, "Creando thread...");
+        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         break;
     case MEMORY_DUMP:
         log_info(log, "Dumpeando...");
+        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
         break;
     default:
         log_warning(log, "Operacion desconocida. No quieras meter la pata");
         break;
     }
     // Se cierra la conexión con el kernel
+    eliminar_paquete(paquete);
     close(*socket_kernel_mem);
     free(socket_kernel_mem);
 }
