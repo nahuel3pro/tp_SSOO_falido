@@ -56,16 +56,26 @@ void execution_context(int socket)
     registro.HX = 332;
     registro.base = 24;
     registro.limite = 250000;
+    // recibir PID, TID:
+    t_paquete *paquete_recv = malloc(sizeof(t_paquete));
+    crear_buffer(paquete_recv);
+    recv(socket, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
+    paquete_recv->buffer->stream = malloc(paquete_recv->buffer->size);
+    recv(socket, paquete_recv->buffer->stream, paquete_recv->buffer->size, 0);
 
-    uint32_t PID;
+    uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
+    uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
+
+    eliminar_paquete(paquete_recv);
+
     log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:<TID>)", PID);
-    t_buffer *buffer = buffer_create(sizeof(t_register));
-    serializar_registro(buffer, registro);
-    buffer->offset = 0;
+    t_buffer *buffer_registro = buffer_create(sizeof(t_register));
+    serializar_registro(buffer_registro, registro);
+    buffer_registro->offset = 0;
     retardo_respuesta();
-    send_data(69, buffer, socket);
+    enviar_buffer(buffer_registro, socket);
     log_info(log, "Mandando contexto de ejecución...");
-    // buffer_destroy(buffer);
+    buffer_destroy(buffer_registro);
 }
 
 void get_instruction(int socket)
@@ -76,7 +86,7 @@ void get_instruction(int socket)
     recv(socket, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
     paquete_recv->buffer->stream = malloc(paquete_recv->buffer->size);
     recv(socket, paquete_recv->buffer->stream, paquete_recv->buffer->size, 0);
-    
+
     uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t PC = buffer_read_uint32(paquete_recv->buffer);
@@ -97,16 +107,18 @@ void get_instruction(int socket)
     //
     char *path = "/home/utnso/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
     // obtener instrucción de PC
-    char *instrution = "SET AX 1";
-    // Tamaño PL + tamaño del string  + "\0"
+    char *instrution = "RELLENO PARA VER SI FUNCA";
+    //                                        Tamaño PL + tamaño del string  + "\0"
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 + strlen(instrution) + 1);
 
     buffer_add_string(buffer_send, instrution);
-
     buffer_send->offset = 0;
 
     retardo_respuesta();
-    send_data(69, buffer_send, socket);
-    
+
+    enviar_buffer(buffer_send, socket);
+
+    buffer_destroy(buffer_send);
+
     // log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
 }

@@ -4,8 +4,8 @@
 char *recv_instruction(int socket_cliente, uint32_t PID, uint32_t TID, uint32_t PC)
 {
     // Mando(serializar) TID, PID y PC
-    t_buffer *buffer_send_inst = buffer_create(SIZEOF_UINT32 * 3);
     t_paquete *paquete_send_inst = crear_paquete(GET_INSTRUCTION);
+    t_buffer *buffer_send_inst = buffer_create(SIZEOF_UINT32 * 3);
     buffer_add_uint32(buffer_send_inst, PID);
     buffer_add_uint32(buffer_send_inst, TID);
     buffer_add_uint32(buffer_send_inst, PC);
@@ -14,18 +14,15 @@ char *recv_instruction(int socket_cliente, uint32_t PID, uint32_t TID, uint32_t 
     enviar_paquete(paquete_send_inst, socket_cliente);
     eliminar_paquete(paquete_send_inst);
 
-    t_paquete *paquete = malloc(sizeof(t_paquete));
-    crear_buffer(paquete);
-    recv(socket_cliente, &paquete->op_code, SIZEOF_UINT8, 0);
-    recv(socket_cliente, &paquete->buffer->size, SIZEOF_UINT32, 0);
-    paquete->buffer->stream = malloc(paquete->buffer->size);
-    recv(socket_cliente, paquete->buffer->stream, paquete->buffer->size, 0);
+    t_buffer *buffer_r;
+    buffer_r = malloc(sizeof(t_buffer));
+    buffer_recv(socket_cliente, buffer_r);
     // Se recibe el contexto de ejecución.
     uint32_t str_size;
-    char *inst = buffer_read_string(paquete->buffer, &str_size);
+    char *inst = buffer_read_string(buffer_r, &str_size);
     log_trace(log, "Instrucción recibida: %s", inst);
 
-    eliminar_paquete(paquete);
+    buffer_destroy(buffer_r);
     return inst;
 }
 

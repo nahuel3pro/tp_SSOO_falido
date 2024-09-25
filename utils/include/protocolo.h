@@ -10,6 +10,7 @@
 #include <unistd.h>
 #include <stdint.h>
 #include "procesos.h"
+#include "hello.h"
 
 typedef enum
 {
@@ -113,11 +114,13 @@ void send_data(int op_code, t_buffer *buffer, int socket_cliente);
 t_paquete *crear_paquete(int codigo);
 void agregar_a_paquete(t_paquete *paquete, void *valor, int tamanio);
 void enviar_paquete(t_paquete *paquete, int socket_cliente);
+void buffer_recv(int socket_connection, t_buffer *buffer_recv);
+void enviar_buffer(t_buffer *buffer, int socket_cliente);
 void liberar_conexion(int socket_cliente);
 void eliminar_paquete(t_paquete *paquete);
 
 t_buffer *serializarProceso(t_PCB pcb, char *path);
-void serializar_registro(t_buffer* buffer,t_register registro);
+void serializar_registro(t_buffer *buffer, t_register registro);
 void deserealizar_registro(t_buffer *buffer, t_register *registro);
 void *serializar_paquete(t_paquete *paquete, int bytes);
 void buffer_add(t_buffer *buffer, void *data, uint32_t size);

@@ -28,7 +28,7 @@ int main(int argc, char *argv[])
         /* fetch(socket_cliente, instruction, &registro, 1, 0);
         decode_execute(instruction, &registro, 1, 0); */
         recv_instruction(socket_cliente, 5, 150, 88);
-
+        //get_context(88, 75, &registro, socket_cliente);
         readline(">");
     }
 
