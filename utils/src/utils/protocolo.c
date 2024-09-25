@@ -279,10 +279,10 @@ void enviar_paquete(t_paquete *paquete, int socket_cliente)
     free(a_enviar);
 }
 
-void send_data(op_code op_code, t_buffer *buffer, int socket_cliente)
+void send_data(int op_code, t_buffer *buffer, int socket_cliente)
 {
     // empaquetar ---------------
-    t_paquete *paquete = crear_paquete(op_code);
+    t_paquete *paquete = crear_paquete((uint8_t)op_code);
     paquete->buffer = buffer;
     // OP CODE      // tamaño del stream   // stream
     void *a_enviar = serializar_paquete(paquete, paquete->buffer->size);
@@ -304,7 +304,7 @@ void eliminar_paquete(t_paquete *paquete)
     free(paquete);
 }
 
-t_paquete *crear_paquete(uint8_t codigo) // CREA BUFFER
+t_paquete *crear_paquete(int codigo) // CREA BUFFER
 {
     t_paquete *paquete = malloc(sizeof(t_paquete));
     paquete->op_code = (uint8_t)codigo;
