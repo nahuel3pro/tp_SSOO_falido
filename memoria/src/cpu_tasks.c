@@ -20,6 +20,7 @@ void atenderCpu(void *void_args)
         break;
     case UPDATE_CONTEXT:
         log_info(log, "Actualizando contexto de ejecución...");
+        update_context(*socket_cpu_mem);
         break;
     case GET_INSTRUCTION:
         log_info(log, "Dándole la instrucción...");
@@ -121,4 +122,23 @@ void get_instruction(int socket)
     buffer_destroy(buffer_send);
 
     //log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
+}
+
+void update_context(int socket_cpu_mem){
+    t_paquete *paquete_recv = malloc(sizeof(t_paquete));
+    crear_buffer(paquete_recv);
+    recv(socket, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
+    paquete_recv->buffer->stream = malloc(paquete_recv->buffer->size);
+    recv(socket, paquete_recv->buffer->stream, paquete_recv->buffer->size, 0);
+    // PID - TID - REGISTROS
+    uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
+    uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
+    // Deserealizar registro que me mandó CPU
+    t_register registros;
+    deserealizar_registro(paquete_recv->buffer, &registros);
+
+    // Buscar PID y TID en la lista de registros, una vez encontrado,
+    // actualizar sus registros.
+
+    // mandar respuesta correcta a CPU? 
 }
