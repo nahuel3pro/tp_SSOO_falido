@@ -1,7 +1,15 @@
 #include "../include/main.h"
-t_config *config = NULL;
-t_log *log = NULL;
-t_dictionary *dict = NULL;
+
+t_queue *new_queue;
+t_queue *ready_queue;
+t_queue *blocked_queue;
+t_queue *exit_queue;
+
+t_list *active_mutexes;
+
+t_dictionary *dict;
+t_config *config;
+t_log *log;
 
 int main(int argc, char *argv[])
 {
@@ -21,6 +29,8 @@ int main(int argc, char *argv[])
 
     // Serializar el proceso. Buffer con los datos del PCB--- Faltan datos.
     t_buffer *buffer = serializarProceso(pcb, path_to_psdc); // --- Faltan las listas.
+
+
 
     // empaquetar --------------- enviar pcb
     if (send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0)
@@ -51,9 +61,9 @@ int main(int argc, char *argv[])
 send_handshake(log, socket_cliente, "Kernel/CPU_dispatch", KERNEL);
 enviar_paquete(paquete_instrucciones, socket_cliente); */
 // // Conectarse a cpu interrupt
-/* int socket_cliente = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_INTERRUPT"));
+int socket_cliente = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_INTERRUPT"));
 send_handshake(log, socket_cliente, "Kernel/CPU_interrupt", KERNEL);
-*/
+
 
 // Continuously call get_next_line until it returns NULL (EOF)
 // while ((line = get_next_line(path_to_psdc)) != NULL)
