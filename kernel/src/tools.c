@@ -28,3 +28,15 @@ char *get_next_line(const char *filename)
         return NULL;  // Return NULL to indicate EOF
     }
 }
+
+void initiate_registers(t_register *my_register)
+{
+    my_register->AX = 0;
+    my_register->BX = 0;
+    my_register->CX = 0;
+    my_register->DX = 0;
+    my_register->EX = 0;
+    my_register->FX = 0;
+    my_register->GX = 0;
+    my_register->HX = 0;
+}

@@ -25,12 +25,13 @@ int main(int argc, char *argv[])
 
     // ------- HACER TODO ESTO EN UNA FUNCIÓN -------
     //  proceso 0
-    t_PCB pcb = pcb_create(1, process_size);
+    t_PCB pcb = pcb_create(0, process_size);
+    // hilo 0
+    t_TCB tcb = tcb_create(0, HIGH, path_to_psdc);
+    list_add(pcb->TIDs, tcb);
 
     // Serializar el proceso. Buffer con los datos del PCB--- Faltan datos.
     t_buffer *buffer = serializarProceso(pcb, path_to_psdc); // --- Faltan las listas.
-
-
 
     // empaquetar --------------- enviar pcb
     if (send_pcb(pcb, PROCESS_CREATION, buffer, socket_cliente) > 0)
@@ -63,7 +64,6 @@ enviar_paquete(paquete_instrucciones, socket_cliente); */
 // // Conectarse a cpu interrupt
 int socket_cliente = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_INTERRUPT"));
 send_handshake(log, socket_cliente, "Kernel/CPU_interrupt", KERNEL);
-
 
 // Continuously call get_next_line until it returns NULL (EOF)
 // while ((line = get_next_line(path_to_psdc)) != NULL)

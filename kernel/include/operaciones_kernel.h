@@ -1,6 +1,6 @@
 #ifndef H_OPERACIONES_KERNEL_H
 #define H_OPERACIONES_KERNEL_H
-#include <../include/main.h>
+#include <../include/globals.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -27,10 +27,10 @@ void long_term_scheduler();
 
 //Syscalls 
 //Procesos 
-void process_create(char *filename, int size, int priority);
+void process_create(char *filename, int process_size, int tid_priority);
 void process_exit(int pid);
 //Hilos
-void thread_create(int pid, int priority);
+void thread_create(int pid, int priority, char *file_path);
 void thread_exit(int tid);
 void thread_join(int tid_to_wait);
 void thread_cancel(int tid);
