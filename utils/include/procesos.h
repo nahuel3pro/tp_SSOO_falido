@@ -32,6 +32,7 @@ typedef struct
     uint32_t PID;
     uint32_t TID;
     int priority;
+    int TID_wait;
     char *file_path;
     t_list *instructions;
     t_register registers;

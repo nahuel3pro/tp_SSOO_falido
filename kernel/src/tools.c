@@ -40,3 +40,23 @@ void initiate_registers(t_register *my_register)
     my_register->GX = 0;
     my_register->HX = 0;
 }
+
+bool thread_is_waiting(int tid)
+{
+    int aux;
+    int size = list_size(dependency_queue);
+    for (int i = 0; i < size; i++)
+    {
+        if (list_get(dependency_queue, i) == tid)
+        {
+            return true;
+        }
+    }
+
+    return false;
+}
+
+bool _has_equal_tid(int tid, int tid_queue)
+{
+    return (tid == tid_queue);
+}

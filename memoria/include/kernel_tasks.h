@@ -8,6 +8,6 @@
 
 void atenderKernel(void *void_args);
 void load_list_instructions(t_list *list_instructions,char* path);
-t_register *initiate_registers();
+void initiate_registers(t_register *registro);
 
 #endif

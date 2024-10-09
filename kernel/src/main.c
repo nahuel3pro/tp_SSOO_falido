@@ -1,9 +1,10 @@
 #include "../include/main.h"
 
-t_list *new_queue;
+t_queue *new_queue;
 t_list *ready_list;
 t_list *exit_queue;
 t_list *blocked_queue;
+t_list *dependency_queue;
 
 t_dictionary *dict;
 t_config *config;
@@ -41,10 +42,16 @@ int main(int argc, char *argv[])
 
     inicializar_variables();
 
-    const char *path_to_psdc = argv[1];
-    const int process_size = atoi(argv[2]);
+    /* const char *path_to_psdc = argv[1];
+    const int process_size = atoi(argv[2]); */
+    const char *path_to_psdc = "/home/utnso/Desktop/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
+    const int process_size = 58;
+
 
     // Conectarse a memoria
+    process_create(path_to_psdc, process_size, 666);
+    readline("> ");
+
     /*     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
         send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
 
@@ -116,9 +123,10 @@ void asignar_algoritmo(char *algoritmo)
 void inicializar_variables()
 {
     exit_queue = list_create();
-    new_queue = list_create();
+    new_queue = queue_create();
     ready_list = list_create();
     blocked_queue = list_create();
+    dependency_queue = list_create();
     // fs_mem_op_count = 0;
 
     // Semaforos

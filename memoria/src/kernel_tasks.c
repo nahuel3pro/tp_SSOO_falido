@@ -7,43 +7,15 @@ void atenderKernel(void *void_args)
     free(args);
 
     log_info(log, "## Kernel Conectado - FD del socket: <%d>", *socket_kernel_mem);
-
-    t_paquete *paquete = malloc(sizeof(t_paquete));
-    crear_buffer(paquete);
-
+    uint8_t res = SUCCESS;
     // Primero recibimos el codigo de operacion
-    recv(*socket_kernel_mem, &(paquete->op_code), SIZEOF_UINT8, 0);
-    uint8_t res = (uint8_t)SUCCESS;
-    switch ((int)paquete->op_code)
+    uint8_t op_code;
+    recv(*socket_kernel_mem, &(op_code), SIZEOF_UINT8, MSG_WAITALL);
+    switch (op_code)
     {
     case PROCESS_CREATION:
-        // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
-        recv(*socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
-        paquete->buffer->stream = malloc(paquete->buffer->size);
-        recv(*socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
-        // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
-        uint32_t pid = buffer_read_uint32(paquete->buffer);
-        uint32_t size = buffer_read_uint32(paquete->buffer);
-        uint32_t str_size;
-        char *path_file = buffer_read_string(paquete->buffer, &str_size);
-        // Demorar tiempo y responder
-        int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
-        sleep(wait_time); // Espera de un segundo
-        // cargar pcb recibido.
-        t_PCB pcb = malloc(sizeof(t_PCB));
-        pcb->PID = pid;
-        pcb->size = size;
-        pcb->TIDs = list_create();
-        t_TCB tcb = malloc(sizeof(t_TCB));
-        tcb->TID = 0; // ---- HARDCODEADO, RECIBIR EL TID Y PRIORIDAD TAMBIÉN.
-        tcb->priority = 0; // se recibe también, acá está hardcodeado
-        tcb->instructions = list_create();
-        load_list_instructions(tcb->instructions, path_file);
-        tcb->registers = initiate_registers();
-        list_add(pcb->TIDs, tcb);
-        log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
-        list_add(process_list, pcb);
-        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
+        log_info(log, "Creando proceso...");
+        process_create(*socket_kernel_mem);
         break;
     case PROCESS_KILL:
         log_info(log, "Matando el proceso");
@@ -62,7 +34,6 @@ void atenderKernel(void *void_args)
         break;
     }
     // Se cierra la conexión con el kernel
-    eliminar_paquete(paquete);
     close(*socket_kernel_mem);
     free(socket_kernel_mem);
 }
@@ -79,9 +50,8 @@ void load_list_instructions(t_list *list_instructions, char *path)
     }
 }
 
-t_register *initiate_registers()
+void initiate_registers(t_register *registro)
 {
-    t_register *registro = malloc(sizeof(t_register));
     registro->PC = 0;
     registro->AX = 0;
     registro->BX = 0;
@@ -93,6 +63,44 @@ t_register *initiate_registers()
     registro->HX = 0;
     registro->base = 0;
     registro->limite = 0;
+}
 
-    return registro;
+void process_create(int socket_kernel_mem)
+{
+    // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
+    t_paquete *paquete = malloc(sizeof(t_paquete));
+    crear_buffer(paquete);
+
+    recv(socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
+    paquete->buffer->stream = malloc(paquete->buffer->size);
+    recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
+    // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
+    uint32_t pid = buffer_read_uint32(paquete->buffer);
+    uint32_t size = buffer_read_uint32(paquete->buffer);
+    uint32_t str_size;
+    char *path_file = buffer_read_string(paquete->buffer, &str_size);
+    uint32_t priority = buffer_read_uint32(paquete->buffer);
+    // cargar PCB recibido e inicializarlo con el TCB principal.
+    t_PCB pcb = malloc(sizeof(t_PCB));
+    pcb->PID = pid;
+    pcb->size = size;
+    pcb->TIDs = list_create();
+    t_TCB tcb = malloc(sizeof(t_TCB));
+    tcb->TID = 0;
+    tcb->PID = pid;
+    tcb->priority = priority;
+    tcb->instructions = list_create();
+    //load_list_instructions(tcb->instructions, path_file); // Acá hay un problema de memoria o threads
+    initiate_registers(&(tcb->registers)); // Acá hay un problema, por algún motivo
+    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
+    list_add(process_list, pcb);
+    list_add(pcb->TIDs, tcb);
+
+    // Demorar tiempo y responder
+    int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
+    usleep(wait_time); // Espera de un segundo
+
+    uint8_t res = SUCCESS;
+    send(socket_kernel_mem, &res, SIZEOF_UINT8, 0);
+    eliminar_paquete(paquete);
 }

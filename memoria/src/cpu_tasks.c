@@ -98,7 +98,7 @@ void get_instruction(int socket)
     // t_PCB pcb_buffer = malloc(sizeof(t_PCB));       UNA VEZ CREADAS LAS ESTRUCTURAS
     // pcb_buffer = list_get(process_list, pib);       PARA GUARDAR LOS PROCESOS POR PARTE
     //                                                 DEL KERNEL.
-    //t_TCB tcb_buffer = malloc(sizeof(t_TCB));
+    // t_TCB tcb_buffer = malloc(sizeof(t_TCB));
     // tcb_buffer = list_get(pcb_buffer->TIDs,tid);
     // // obtener instrucción del TID
     // char* instruction = list_get(tcb_buffer->instructions, pc);
@@ -121,10 +121,11 @@ void get_instruction(int socket)
 
     buffer_destroy(buffer_send);
 
-    //log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
+    // log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
 }
 
-void update_context(int socket_cpu_mem){
+void update_context(int socket_cpu_mem)
+{
     t_paquete *paquete_recv = malloc(sizeof(t_paquete));
     crear_buffer(paquete_recv);
     recv(socket, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
@@ -140,5 +141,5 @@ void update_context(int socket_cpu_mem){
     // Buscar PID y TID en la lista de registros, una vez encontrado,
     // actualizar sus registros.
 
-    // mandar respuesta correcta a CPU? 
+    // mandar respuesta correcta a CPU?
 }
