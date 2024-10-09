@@ -28,6 +28,10 @@ void long_term_scheduler();
 t_TCB safe_tcb_remove(t_list *list, pthread_mutex_t *mutex);
 t_TCB elegir_tcb_segun_algoritmo();
 void exec_tcb();
+void ready_tcb(void);
+void exit_tcb(void);
+void ready_tcb(void);
+void block_return_tcb();
 
 //Syscalls 
 //Procesos 
@@ -38,6 +42,10 @@ void thread_exit(int tid);
 void thread_join(int tid_to_wait);
 void thread_cancel(int tid);
 //Mutex
+void safe_pcb_add(t_queue *queue, t_PCB pcb, pthread_mutex_t *mutex);
+t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex);
+void safe_tcb_add(t_list *list, t_TCB *tcb, pthread_mutex_t *mutex);
+t_TCB safe_tcb_remove(t_list *list, pthread_mutex_t *mutex);
 void mutex_create(int pid, char *mutex_name);
 void mutex_lock(int tid, char *mutex_name);
 void mutex_unlock(int tid, char *mutex_name);
