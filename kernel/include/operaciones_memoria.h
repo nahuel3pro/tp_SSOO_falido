@@ -3,6 +3,6 @@
 
 #include"globals.h"
 
-void process_create(int PID, int process_size);
+void process_create(char *filename, int process_size, int thread_priority);
 
 #endif

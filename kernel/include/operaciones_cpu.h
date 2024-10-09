@@ -3,5 +3,4 @@
 
 #include "globals.h"
 
-void asignar_algoritmo(char *algoritmo);
 #endif

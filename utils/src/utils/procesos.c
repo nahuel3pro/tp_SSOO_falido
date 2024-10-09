@@ -11,10 +11,10 @@ t_PCB pcb_create(int PID, int size){
     return pcb;
 }
 
-t_TCB tcb_create(int TID, thrd_priority priority, char* file_path){
+t_TCB tcb_create(int TID, int priority, char* file_path){
     t_TCB tcb = malloc(sizeof(t_TCB));
     tcb->TID = (uint32_t)TID;
-    tcb->priority = HIGH;
+    tcb->priority = priority;
 
     return tcb;
 }

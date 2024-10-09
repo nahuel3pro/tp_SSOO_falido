@@ -36,7 +36,7 @@ void atenderKernel(void *void_args)
         pcb->TIDs = list_create();
         t_TCB tcb = malloc(sizeof(t_TCB));
         tcb->TID = 0; // ---- HARDCODEADO, RECIBIR EL TID Y PRIORIDAD TAMBIÉN.
-        tcb->priority = HIGH; // se recibe también, acá está hardcodeado
+        tcb->priority = 0; // se recibe también, acá está hardcodeado
         tcb->instructions = list_create();
         load_list_instructions(tcb->instructions, path_file);
         tcb->registers = initiate_registers();

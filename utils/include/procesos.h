@@ -4,12 +4,6 @@
 #include <stdint.h>
 #include <commons/collections/list.h>
 #include <stdlib.h>
-typedef enum
-{
-    HIGH,
-    MEDIUM,
-    LOW
-} thrd_priority;
 
 typedef struct
 {
@@ -37,12 +31,12 @@ typedef struct
 {
     uint32_t PID;
     uint32_t TID;
-    thrd_priority priority;
+    int priority;
     char *file_path;
     t_list *instructions;
     t_register registers;
 } *t_TCB;
 
 t_PCB pcb_create(int PID, int size);
-t_TCB tcb_create(int TID, thrd_priority priority, char *file_path);
+t_TCB tcb_create(int TID, int priority, char *file_path);
 #endif
