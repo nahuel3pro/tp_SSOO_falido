@@ -45,12 +45,10 @@ void ready_tcb(void)
     {
         sem_wait(&sem_listos_ready); // cola new
         t_PCB pcb = safe_pcb_remove(new_queue, &mutex_cola_listos_para_ready);
+        t_TCB aux = list_get(pcb->TIDs, 0);
         sem_post(&sem_ready);
         // mandarle a memoria PID, SIZE, Y RUTA DEL ARCHIVO.
-        pcb->PID;
-        pcb->size;
-        t_TCB aux = list_get(pcb->TIDs, 0);
-        aux->file_path;
+        process_create(aux->file_path, pcb->size, aux->priority);
         // esperar confirmación de memoria
     }
 }
@@ -70,10 +68,11 @@ void exec_tcb()
 {
     while (1)
     {
-        sem_wait(&sem_ready);
-        sem_wait(&sem_exec);
+       /*  sem_wait(&sem_ready);
+        sem_wait(&sem_exec); */
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
+        dispatch(tcb);
     }
 }
 

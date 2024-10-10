@@ -6,4 +6,5 @@
 
 void asignar_algoritmo(char *algoritmo);
 void inicializar_variables();
+void planificar();
 #endif

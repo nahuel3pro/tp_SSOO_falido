@@ -47,9 +47,11 @@ int main(int argc, char *argv[])
     const char *path_to_psdc = "/home/utnso/Desktop/tp-2024-2c-La-Daneta/kernel/test_psdc/test2.dat";
     const int process_size = 58;
 
+    process_create(path_to_psdc, process_size, 0);
+
+    planificar();
 
     // Conectarse a memoria
-    process_create(path_to_psdc, process_size, 666);
     readline("> ");
 
     /*     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
@@ -97,13 +99,6 @@ enviar_paquete(paquete_instrucciones, socket_cliente); */
 /* int socket_cliente = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_INTERRUPT"));
 send_handshake(log, socket_cliente, "Kernel/CPU_interrupt", KERNEL); */
 
-// Continuously call get_next_line until it returns NULL (EOF)
-// while ((line = get_next_line(path_to_psdc)) != NULL)
-// {
-//     log_info(log, "%s", line);
-//     readline("> ");
-// }
-
 void asignar_algoritmo(char *algoritmo)
 {
     if (strcmp(algoritmo, "FIFO") == 0)
@@ -146,4 +141,11 @@ void inicializar_variables()
     sem_init(&sem_block_return, 0, 0);
     sem_init(&ongoing_fs_mem_op, 0, 1);
     sem_init(&fin_f_open, 0, 0);
+}
+
+void planificar(){
+    planificar_largo_plazo();
+	log_info(log, "Se inició la planificacion de largo plazo");
+	planificar_corto_plazo();
+	log_info(log, "Se inició la planificacion de corto plazo");
 }
