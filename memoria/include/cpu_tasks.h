@@ -10,5 +10,7 @@
 void atenderCpu(void* void_args);
 void execution_context(int socket);
 void get_instruction(int socket);
+t_register get_thread_registers(int PID, int TID);
+
 
 #endif

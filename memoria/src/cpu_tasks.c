@@ -44,19 +44,6 @@ void atenderCpu(void *void_args)
 
 void execution_context(int socket)
 {
-    // CPU pide este registro
-    t_register registro;
-    registro.PC = 3;
-    registro.AX = 80;
-    registro.BX = 44;
-    registro.CX = 2;
-    registro.DX = 222;
-    registro.EX = 99;
-    registro.FX = 230;
-    registro.GX = 666;
-    registro.HX = 332;
-    registro.base = 24;
-    registro.limite = 250000;
     // recibir PID, TID:
     t_paquete *paquete_recv = malloc(sizeof(t_paquete));
     crear_buffer(paquete_recv);
@@ -66,12 +53,12 @@ void execution_context(int socket)
 
     uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
-
     eliminar_paquete(paquete_recv);
+    t_register register_to_send = get_thread_registers(PID, TID);
 
     log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:<TID>)", PID);
     t_buffer *buffer_registro = buffer_create(sizeof(t_register));
-    serializar_registro(buffer_registro, registro);
+    serializar_registro(buffer_registro, register_to_send);
     buffer_registro->offset = 0;
     retardo_respuesta();
     enviar_buffer(buffer_registro, socket);
@@ -142,4 +129,35 @@ void update_context(int socket_cpu_mem)
     // actualizar sus registros.
 
     // mandar respuesta correcta a CPU?
+}
+
+t_register get_thread_registers(int PID, int TID)
+{
+    // mutex para lista de registros
+    int size_i = list_size(process_list);
+    t_register registers_return;
+    t_PCB aux_pcb = malloc(sizeof(t_PCB));
+    t_TCB aux_tcb = malloc(sizeof(t_TCB));
+    for (int i = 0; i < size_i; i++)
+    {
+        aux_pcb = list_get(process_list, i);
+        if (aux_pcb->PID == PID)
+        {
+            int size_j = list_size(aux_pcb->TIDs);
+            for (int j = 0; j < size_j; i++)
+            {
+                aux_tcb = list_get(aux_pcb->TIDs, j);
+                if (aux_tcb->TID == TID)
+                {
+                    registers_return = aux_tcb->registers;
+                    free(aux_pcb);
+                    free(aux_tcb);
+                    return registers_return;
+                }
+            }
+        }
+    }
+
+    free(aux_pcb);
+    free(aux_tcb);
 }

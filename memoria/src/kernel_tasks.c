@@ -90,8 +90,8 @@ void process_create(int socket_kernel_mem)
     tcb->PID = pid;
     tcb->priority = priority;
     tcb->instructions = list_create();
-    //load_list_instructions(tcb->instructions, path_file); // Acá hay un problema de memoria o threads
-    initiate_registers(&(tcb->registers)); // Acá hay un problema, por algún motivo
+    load_list_instructions(tcb->instructions, path_file); // Acá hay un problema de memoria o threads
+    //initiate_registers(&(tcb->registers)); // Acá hay un problema, por algún motivo
     log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);
