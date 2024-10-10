@@ -71,7 +71,10 @@ typedef enum
     UPDATE_CONTEXT,
     GET_INSTRUCTION,
     READ_MEM,
-    WRITE_MEM
+    WRITE_MEM,
+    // --- CÓDIGO DE OPERACIÓN KERNEL-CPU ---
+    DISPATCH,
+    INTERRUPT
 } op_code;
 
 typedef struct

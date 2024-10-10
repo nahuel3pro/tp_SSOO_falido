@@ -8,6 +8,6 @@ void dispatch(t_TCB tcb)
     crear_buffer(paquete);
     buffer_add_uint32(paquete->buffer, tcb->PID);
     buffer_add_uint32(paquete->buffer, tcb->TID);
-    enviar_paquete(paquete);
+    enviar_paquete(paquete, fd);
     eliminar_paquete(paquete);
 }

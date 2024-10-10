@@ -12,7 +12,7 @@
 #include <commons/string.h>
 #include "tools.h"
 #include "globals.h"
-
+#include "operaciones_kernel.h"
 
 
 #endif
