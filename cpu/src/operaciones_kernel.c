@@ -27,6 +27,7 @@ void atenter_dispatch(void)
         switch (op_code)
         {
         case DISPATCH:
+            log_info(log, "Atendiendo instrucción dispatch...");
             dispatch(client_dispatch_fd);
             break;
         case -1:
@@ -59,7 +60,7 @@ void dispatch(int client_dispatch_fd)
     eliminar_paquete(paquete);
 
     int memoria_fd = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-
+    send_handshake(log, memoria_fd, "CPU/MEMORIA", CPU);
     char * instruccion;
     t_register registro;
 

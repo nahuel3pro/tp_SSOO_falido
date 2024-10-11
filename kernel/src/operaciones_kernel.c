@@ -70,6 +70,7 @@ void exec_tcb()
     {
        /*  sem_wait(&sem_ready);
         sem_wait(&sem_exec); */
+        log_info(log, "Eligiendo TCB...");
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
         dispatch(tcb);

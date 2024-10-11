@@ -1,5 +1,5 @@
-#ifndef H_MAIN_H_
-#define H_MAIN_H_
+#ifndef H_OPERACIONES_CPU_H_
+#define H_OPERACIONES_CPU_H_
 
 #include "globals.h"
 
