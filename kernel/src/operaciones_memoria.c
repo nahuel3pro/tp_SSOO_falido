@@ -53,28 +53,3 @@ void process_create(char *filename, int process_size, int main_thread_priority)
     }
     close(socket_cliente);
 }
-
-/* void thread_create(int pid, int priority, char *file_path)
-{
-    t_PCB process = find_process_by_pid(pid);
-
-    if (process == NULL)
-    {
-        log_info(log, "Error: Proceso no encontrado");
-        return;
-    }
-
-    // Creamos un nuevo hilo
-    t_TCB new_thread = malloc(sizeof(t_TCB));
-    new_thread->TID = rand(); // Generar un TID único
-    new_thread->priority = priority;
-
-    list_add(process->TIDs, new_thread);
-    // Avisarle a memoria y esperar confirmación.
-    // mandar el file_path y PID
-
-    // Enviar el hilo a la cola READY
-    queue_push(ready_queue, new_thread);
-
-    log_info(log, "Hilo creado y enviado a la cola READY");
-} */

@@ -1,9 +1,8 @@
 #include "../include/operaciones_cpu.h"
 
-void dispatch(t_TCB tcb)
+void dispatch(t_TCB tcb, int fd)
 {
     log_info(log, "Conectándome a CPU");
-    int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
     //send_handshake(log, fd, "KERNEL/CPU", KERNEL);
     t_paquete *paquete_send = crear_paquete(DISPATCH);
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 * 2);

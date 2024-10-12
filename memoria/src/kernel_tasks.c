@@ -40,14 +40,27 @@ void atenderKernel(void *void_args)
 
 void load_list_instructions(t_list *list_instructions, char *path)
 {
-    char *line;
+    const int MAX_LINE_LENGTH = 256;
+    FILE *pseudocodigo;
+    char buffer[MAX_LINE_LENGTH];
 
-    for (int i = 0; (line = get_next_line(path)) != NULL; i++)
+    pseudocodigo = fopen(path, "r");
+
+    if (pseudocodigo == NULL)
     {
-        char *add = malloc(string_length(line) + 1);
-        memcpy(add, line, string_length(line) + 1);
-        list_add(list_instructions, add);
+        log_error(log, "No se pudo abrir el archivo.\n");
+        abort();
     }
+
+    while (fgets(buffer, MAX_LINE_LENGTH, pseudocodigo) != NULL)
+    {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        char *buffer_add = malloc(sizeof(buffer));
+        strcpy(buffer_add, buffer);
+        list_add(list_instructions, buffer_add);
+    }
+
+    fclose(pseudocodigo);
 }
 
 void initiate_registers(t_register *registro)
@@ -91,7 +104,9 @@ void process_create(int socket_kernel_mem)
     tcb->priority = priority;
     tcb->instructions = list_create();
     load_list_instructions(tcb->instructions, path_file); // Acá hay un problema de memoria o threads
-    //initiate_registers(&(tcb->registers)); // Acá hay un problema, por algún motivo
+    t_register registro;
+    initiate_registers(&registro); // Acá hay un problema, por algún motivo
+    tcb->registers = registro;
     log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);

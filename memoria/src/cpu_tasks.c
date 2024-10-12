@@ -58,9 +58,7 @@ void execution_context(int socket)
     uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
     eliminar_paquete(paquete_recv);
-    // t_register register_to_send = get_thread_registers(PID, TID); --problema con registros
-    t_register register_to_send;
-    register_to_send.AX = 666;
+    t_register register_to_send = get_thread_registers(PID, TID); //--problema con registros
     log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:<TID>)", PID);
     t_buffer *buffer_registro = buffer_create(sizeof(t_register));
     serializar_registro(buffer_registro, register_to_send);

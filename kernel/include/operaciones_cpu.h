@@ -3,6 +3,6 @@
 
 #include "globals.h"
 
-void dispatch(t_TCB tcb);
+void dispatch(t_TCB tcb, int fd);
 
 #endif

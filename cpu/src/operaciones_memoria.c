@@ -89,9 +89,33 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         log_info(log, valor1);
         break;
 
+    // ----- SYSCALLS -----
     case INSTRUCCION_DUMP_MEMORY:
-
         log_info(log, "DUMP MEMORY");
+        break;
+    case INSTRUCCION_MUTEX_CREATE:
+        log_info(log, "MUTEX_CREATE");
+        break;
+    case INSTRUCCION_MUTEX_UNLOCK:
+        log_info(log, "INSTRUCCION_MUTEX_UNLOCK");
+        break;
+    case INSTRUCCION_PROCESS_EXIT:
+        log_info(log, "INSTRUCCION_PROCESS_EXIT");
+        break;
+    case INSTRUCCION_PROCESS_CREATE:
+        log_info(log, "INSTRUCCION_PROCESS_CREATE");
+        break;
+    case INSTRUCCION_THREAD_CANCEL:
+        log_info(log, "INSTRUCCION_THREAD_CANCEL");
+        break;
+    case INSTRUCCION_THREAD_CREATE:
+        log_info(log, "INSTRUCCION_THREAD_CREATE");
+        break;
+    case INSTRUCCION_THREAD_EXIT:
+        log_info(log, "INSTRUCCION_THREAD_EXIT");
+        break;
+    case INSTRUCCION_THREAD_JOIN:
+        log_info(log, "INSTRUCCION_THREAD_JOIN");
         break;
     default:
         break;

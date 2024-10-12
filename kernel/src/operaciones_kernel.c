@@ -73,7 +73,13 @@ void exec_tcb()
         log_info(log, "Eligiendo TCB...");
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
-        dispatch(tcb);
+        int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
+        dispatch(tcb, fd);
+        t_buffer *buffer_response = malloc(sizeof(t_buffer));
+        buffer_recv(fd, buffer_response);
+        int str_size;
+        char* motivo = buffer_read_string(buffer_response, str_size);
+        atender_motivo(motivo, buffer_response);
     }
 }
 

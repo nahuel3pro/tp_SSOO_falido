@@ -2,8 +2,8 @@
 
 char *get_next_line(const char *filename)
 {
-    static FILE *file = NULL;
-    static char buffer[1024];
+    FILE *file = NULL;
+    char buffer[256];
 
     // If the file is not open yet, open it
     if (file == NULL)
@@ -24,8 +24,7 @@ char *get_next_line(const char *filename)
     else
     {
         fclose(file); // Close the file when we reach the end
-        file =
-            NULL;    // Reset file pointer to allow re-opening the file later if needed
-        return NULL; // Return NULL to indicate EOF
+        file = NULL;  // Reset file pointer to allow re-opening the file later if needed
+        return NULL;  // Return NULL to indicate EOF
     }
 }
