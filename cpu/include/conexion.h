@@ -1,7 +1,7 @@
 #ifndef CONEXION_H_
 #define CONEXION_H_
 
-#include "main.h"
+#include "globals.h"
 #include "../include/protocolo.h"
 
 int recv_handshake_cpu(t_log *log, int server_fd);
