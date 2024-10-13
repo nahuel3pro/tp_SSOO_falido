@@ -7,4 +7,5 @@
 char *get_next_line(const char *filename);
 void load_list_instructions(t_list *list_instructions, const char *path);
 void initiate_registers(t_register *registro);
+t_TCB get_thread(int PID, int TID);
 #endif

@@ -49,9 +49,9 @@ int main(int argc, char *argv[])
     const int process_size = 58;
 
     // pruebas ----
-    thread_create(555, 666, "Prueba 1234");
+    /* thread_create(555, 666, "Prueba 1234");
 
-    readline("> ");
+    readline("> "); */
     // ----
     process_create(path_to_psdc, process_size, 0);
 

@@ -68,3 +68,28 @@ void initiate_registers(t_register *registro)
     registro->base = 0;
     registro->limite = 0;
 }
+
+t_TCB get_thread(int PID, int TID)
+{
+    // mutex para lista de registros
+    int size_i = list_size(process_list);
+    t_register registers_return;
+    t_PCB aux_pcb;
+    t_TCB aux_tcb;
+    for (int i = 0; i < size_i; i++)
+    {
+        aux_pcb = list_get(process_list, i);
+        if (aux_pcb->PID == PID)
+        {
+            int size_j = list_size(aux_pcb->TIDs);
+            for (int j = 0; j < size_j; i++)
+            {
+                aux_tcb = list_get(aux_pcb->TIDs, j);
+                if (aux_tcb->TID == TID)
+                {
+                    return aux_tcb;
+                }
+            }
+        }
+    }
+}
