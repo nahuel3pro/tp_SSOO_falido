@@ -28,3 +28,43 @@ char *get_next_line(const char *filename)
         return NULL;  // Return NULL to indicate EOF
     }
 }
+
+void load_list_instructions(t_list *list_instructions, const char *path)
+{
+    const int MAX_LINE_LENGTH = 256;
+    FILE *pseudocodigo;
+    char buffer[MAX_LINE_LENGTH];
+
+    pseudocodigo = fopen(path, "r");
+
+    if (pseudocodigo == NULL)
+    {
+        log_error(log, "No se pudo abrir el archivo.\n");
+        abort();
+    }
+
+    while (fgets(buffer, MAX_LINE_LENGTH, pseudocodigo) != NULL)
+    {
+        buffer[strcspn(buffer, "\n")] = '\0';
+        char *buffer_add = malloc(sizeof(buffer));
+        strcpy(buffer_add, buffer);
+        list_add(list_instructions, buffer_add);
+    }
+
+    fclose(pseudocodigo);
+}
+
+void initiate_registers(t_register *registro)
+{
+    registro->PC = 0;
+    registro->AX = 0;
+    registro->BX = 0;
+    registro->CX = 0;
+    registro->DX = 0;
+    registro->EX = 0;
+    registro->FX = 0;
+    registro->GX = 0;
+    registro->HX = 0;
+    registro->base = 0;
+    registro->limite = 0;
+}

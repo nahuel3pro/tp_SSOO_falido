@@ -3,9 +3,9 @@
 
 #include <unistd.h>
 #include <semaphore.h>
-#include <../include/server.h>
-#include <../include/protocolo.h>
-#include <../include/hello.h>
+#include "../include/server.h"
+#include "../include/protocolo.h"
+#include "../include/hello.h"
 #include "../include/operaciones_kernel.h"
 #include "../include/tools.h"
 #include "../include/procesos.h"
