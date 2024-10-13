@@ -26,12 +26,12 @@ char *recv_instruction(int socket_cliente, uint32_t PID, uint32_t TID, uint32_t 
     return inst;
 }
 
-void fetch(int socket_cliente, char *instruction, t_register *registro, uint32_t PID, uint32_t TID)
+char *fetch(int socket_cliente, t_register *registro, uint32_t PID, uint32_t TID)
 {
 
     get_context(PID, TID, registro, socket_cliente);
 
-    instruction = recv_instruction(socket_cliente, PID, TID, registro->PC);
+    return recv_instruction(socket_cliente, PID, TID, registro->PC);
 }
 
 void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint32_t TID)
