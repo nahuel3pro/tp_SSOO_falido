@@ -22,6 +22,5 @@ void get_context(uint32_t PID, uint32_t TID, t_register *registro, int socket_co
     buffer_recv(socket_connection, buffer_r);
 
     deserealizar_registro(buffer_r, registro);
-    log_info(log, "AX: %d", registro->AX);
     buffer_destroy(buffer_r);
 }

@@ -94,6 +94,17 @@ t_TCB get_thread(int PID, int TID)
     }
 }
 
-void update_registers(t_register *mem_reg, t_register new_registers){
-
+void update_registers(t_register *mem_reg, t_register new_registers)
+{
+    mem_reg->PC = new_registers.PC;
+    mem_reg->AX = new_registers.AX;
+    mem_reg->BX = new_registers.BX;
+    mem_reg->CX = new_registers.CX;
+    mem_reg->DX = new_registers.DX;
+    mem_reg->EX = new_registers.EX;
+    mem_reg->FX = new_registers.FX;
+    mem_reg->GX = new_registers.GX;
+    mem_reg->HX = new_registers.HX;
+    mem_reg->base = new_registers.base;
+    mem_reg->limite = new_registers.limite;
 }

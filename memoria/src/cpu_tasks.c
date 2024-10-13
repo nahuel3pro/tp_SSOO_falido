@@ -105,21 +105,21 @@ void update_context(int socket_cpu_mem)
 {
     t_paquete *paquete_recv = malloc(sizeof(t_paquete));
     crear_buffer(paquete_recv);
-    recv(socket, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
+    recv(socket_cpu_mem, &paquete_recv->buffer->size, SIZEOF_UINT32, 0);
     paquete_recv->buffer->stream = malloc(paquete_recv->buffer->size);
-    recv(socket, paquete_recv->buffer->stream, paquete_recv->buffer->size, 0);
+    recv(socket_cpu_mem, paquete_recv->buffer->stream, paquete_recv->buffer->size, 0);
     // PID - TID - REGISTROS
     uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
-    eliminar_paquete(paquete_recv);
     // Deserealizar registro que me mandó CPU
     t_register new_registers;
     deserealizar_registro(paquete_recv->buffer, &new_registers);
+    eliminar_paquete(paquete_recv);
 
     // Buscar PID y TID en la lista de registros, una vez encontrado,
     // actualizar sus registros.
     t_TCB thread_aux = get_thread(PID, TID);
-    update_registers(&thread_aux, new_registers);
+    update_registers(&thread_aux->registers, new_registers);
     // mandar respuesta correcta a CPU?
     uint8_t res = SUCCESS;
 

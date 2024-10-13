@@ -46,10 +46,13 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
     switch (dic_instruction)
     {
     case INSTRUCCION_SET:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
         set_registro(registro, array[1], atoi(array[2]));
         break;
 
     case INSTRUCCION_READ_MEM:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+
         valor1 = obtener_registro(array[2], registro);
 
         set_registro(registro, array[1], valor1);
@@ -60,6 +63,8 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_SUM:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+
         valor1 = obtener_registro(array[1], registro);
         valor2 = obtener_registro(array[2], registro);
 
@@ -67,6 +72,8 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_SUB:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %s>", TID, array[0], array[1], array[2]);
+
         valor1 = obtener_registro(array[1], registro);
         valor2 = obtener_registro(array[2], registro);
 
@@ -74,17 +81,20 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_JNZ:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+
         valor1 = obtener_registro(array[1], registro);
-        valor2 = obtener_registro(array[2], registro);
 
         if (valor1 != 0)
         {
-            set_registro(registro, "PC", valor2 - 1);
+            set_registro(registro, "PC", atoi(array[2]));
             break;
         }
         break;
 
     case INSTRUCCION_LOG:
+        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s>", TID, array[0], array[1]);
+
         valor1 = obtener_registro(array[1], registro);
         log_info(log, valor1);
         break;
