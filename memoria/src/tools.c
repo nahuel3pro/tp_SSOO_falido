@@ -93,3 +93,7 @@ t_TCB get_thread(int PID, int TID)
         }
     }
 }
+
+void update_registers(t_register *mem_reg, t_register new_registers){
+
+}
