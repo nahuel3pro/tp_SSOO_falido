@@ -85,7 +85,10 @@ void exec_tcb()
 
 void atender_motivo(char * motivo,t_buffer* buffer_response)
 {
-    switch(motivo)
+    t_dictionary* dic = dict_protocol();
+    int instruccion = dictionary_get(dic, motivo);
+
+    switch(instruccion)
         {
         case INSTRUCCION_PROCESS_CREATE:
         // esta syscall recibirá 3 parámetros de la CPU, el primero será el nombre del archivo de pseudocódigo que deberá ejecutar el proceso, 
@@ -98,16 +101,18 @@ void atender_motivo(char * motivo,t_buffer* buffer_response)
             int priority = buffer_read_uint32(buffer_response);
 
             //Separar la logica de crear proceso y hilo de esta funcion 
-            process_create(path_to_psdc, process_size, priority);            
+            process_create(path_to_psdc, process_size, priority);
+            //guardar en lista de procesos            
             break;
         case INSTRUCCION_PROCESS_EXIT:
         // esta syscall finalizará el PCB correspondiente al TCB que ejecutó la instrucción, enviando todos sus TCBs asociados a la cola de EXIT. 
         // Esta instrucción sólo será llamada por el TID 0 del proceso y le deberá indicar a la memoria la finalización de dicho proceso.
             log_info(log, "INSTRUCCION_PROCESS_EXIT");
             uint32_t tid = buffer_read_uint32(buffer_response);
+            uint32_t pid = buffer_read_uint32(buffer_response);
             if(tid == 0)
             {
-                send_mem_process_exit(tid);
+                send_pid_exit(pid);
             }
             break;
         case INSTRUCCION_THREAD_CREATE:
@@ -117,8 +122,9 @@ void atender_motivo(char * motivo,t_buffer* buffer_response)
             int srt_size;
             char* path_to_psdc = buffer_read_string(buffer_response, srt_size);
             int priority = buffer_read_uint32(buffer_response);
-            //Separar la logica de crear proceso y hilo de esta funcion 
-            process_create(path_to_psdc, 0, priority);   
+            uint32_t pid = buffer_read_uint32(buffer_response);
+
+            thread_create(pid , priority, path_to_psdc );
 
             break;
         case INSTRUCCION_THREAD_JOIN:
@@ -126,10 +132,13 @@ void atender_motivo(char * motivo,t_buffer* buffer_response)
         // En caso de que el TID pasado por parámetro no exista o ya haya finalizado, esta syscall no hace nada y el hilo que la invocó continuará su ejecución.
             log_info(log, "INSTRUCCION_THREAD_JOIN");
             uint32_t tid = buffer_read_uint32(buffer_response);
+            t_TCB
             //Verificar que exista el TID y obtener el TCB
 
             //Si existe, Agregar TCB a lista BLOCK
             //list_add(blocked_queue, tcb)
+
+            //Como manejamos la sincronizacion entre este hilo y con el que hace join
             
             break;
         case INSTRUCCION_THREAD_CANCEL:
@@ -138,30 +147,28 @@ void atender_motivo(char * motivo,t_buffer* buffer_response)
         //  En caso de que el TID pasado por parámetro no exista o ya haya finalizado, esta syscall no hace nada. 
         //  Finalmente, el hilo que la invocó continuará su ejecución.
             log_info(log, "INSTRUCCION_THREAD_CANCEL");
-            uint32_t tid = buffer_read_uint32(buffer_response);
-            //Verificar que exista el TID y obtener el TCB
+            uint32_t tid_to_end = buffer_read_uint32(buffer_response);
+            uint32_t pid = buffer_read_uint32(buffer_response);
 
-            //Si existe, Agregar TCB a lista BLOCK y avisar a memoria
-            //list_add(exit_queue, tcb)
-            //send(memoria)
+            //Verificar que exista el TID y obtener el TCB
+            //Si existe, Agregar TCB a lista EXIT y avisar a memoria
+            send_tid_exit(pid, tid_to_end);
             break;
         case INSTRUCCION_THREAD_EXIT:
         //  esta syscall finaliza al hilo que lo invocó, pasando el mismo al estado EXIT. 
         //  Se deberá indicar a la Memoria la finalización de dicho hilo.
             log_info(log, "INSTRUCCION_THREAD_EXIT");
-
-            //cual es el hilo que lo invoco? se recibe desde cpu imagino
+            uint32_t tid = buffer_read_uint32(buffer_response);
+            send_tid_exit(pid, tid);
             break;
         case INSTRUCCION_MUTEX_CREATE:
         // crea un nuevo mutex para el proceso sin asignar a ningún hilo.
             log_info(log, "INSTRUCCION_MUTEX_CREATE");
             int srt_size;
-            char* path_to_psdc = buffer_read_string(buffer_response, srt_size);
+            char* recurso = buffer_read_string(buffer_response, srt_size);
+            uint32_t pid = buffer_read_uint32(buffer_response);
 
-            //crearmutex, como le asigno el nombre?
-            pthread_mutex_t mutex;
-            pthread_mutex_init(&mutex, NULL);
-
+            mutex_create(pid, recurso);
             break;
         case INSTRUCCION_MUTEX_LOCK:
         // se deberá verificar primero que exista el mutex solicitado y en caso de que exista y el mismo no se encuentre tomado se deberá asignar 
@@ -182,7 +189,9 @@ void atender_motivo(char * motivo,t_buffer* buffer_response)
         // Esta syscall le solicita a la memoria, junto al PID y TID que lo solicitó, que haga un Dump del proceso.
         // Esta syscall bloqueará al hilo que la invocó hasta que el módulo memoria confirme la finalización de la operación, 
         // en caso de error, el proceso se enviará a EXIT. Caso contrario, el hilo se desbloquea normalmente pasando a READY.            
-        log_info(log, "INSTRUCCION_DUMP_MEMORY");
+            log_info(log, "INSTRUCCION_DUMP_MEMORY");
+            uint32_t tid = buffer_read_uint32(buffer_response);
+            uint32_t pid = buffer_read_uint32(buffer_response);
             break;    
         case -1:
             log_info(log, "Alguien no deseado quizo entrar");
@@ -241,4 +250,10 @@ t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex)
     pcb = list_remove(queue, 0);
     pthread_mutex_unlock(mutex);
     return pcb;
+}
+
+void send_pcb_exit(int pid)
+{
+    //Buscar en cola de procesos y mandar a exit todos sus hilos
+
 }

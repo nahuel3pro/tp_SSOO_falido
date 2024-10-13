@@ -6,6 +6,7 @@ t_list *exit_queue;
 t_list *blocked_queue;
 t_list *dependency_queue;
 
+
 t_dictionary *dict;
 t_config *config;
 t_log *log;

@@ -62,4 +62,9 @@ int mutex_is_available(char *mutex_name, t_PCB process);
 void init_mutexes();
 void unlock_mutex(char *mutex_name);
 
+void atender_motivo(char * motivo,t_buffer* buffer_response);
+void send_pid_exit(int pid);
+void send_tid_exit(int pid, int tid);
+void mutex_create(int pid, char* recurso);
+
 #endif // H_OPERACIONES_KERNEL_H
