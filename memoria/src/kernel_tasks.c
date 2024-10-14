@@ -55,17 +55,8 @@ void process_create(int socket_kernel_mem)
     const char *path_file = buffer_read_string(paquete->buffer, &str_size);
     eliminar_paquete(paquete);
     // cargar PCB recibido e inicializarlo con el TCB principal.
-    t_PCB pcb = malloc(sizeof(*pcb));
-    pcb->PID = pid;
-    pcb->size = size;
-    pcb->TIDs = list_create();
-    t_TCB tcb = malloc(sizeof(*tcb));
-    tcb->TID = 0;
-    tcb->PID = pid;
-    tcb->priority = priority;
-    tcb->instructions = list_create();
-    initiate_registers(&tcb->registers);
-    load_list_instructions(tcb->instructions, path_file);
+    t_PCB pcb = process_initiate(pid, size);
+    t_TCB tcb = thread_initiate(path_file, priority, pid, 0);
     log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);
@@ -80,16 +71,21 @@ void process_create(int socket_kernel_mem)
 
 void thread_create(int socket_kernel_mem)
 {
-    log_info(log, "## Hilo <Creado> - (PID:TID) - (<PID>:<TID>)"); // Log obligatorio
     uint32_t buffer_size;
     recv(socket_kernel_mem, &buffer_size, SIZEOF_UINT32, 0);
     t_buffer *buffer_rcv = buffer_create(buffer_size);
     recv(socket_kernel_mem, buffer_rcv->stream, buffer_size, 0);
 
-    int pid = buffer_read_uint32(buffer_rcv);
+    int PID = buffer_read_uint32(buffer_rcv);
     int thread_priority = buffer_read_uint32(buffer_rcv);
     int str_size;
     char *file_path = buffer_read_string(buffer_rcv, &str_size);
-
     buffer_destroy(buffer_rcv);
+    // Buscar PID para añadirle el thread
+    t_PCB pcb_aux = get_process(PID);
+    int thread_qnty = list_size(pcb_aux->TIDs);
+    t_TCB new_thread = thread_initiate(file_path, thread_priority, PID, thread_qnty);
+    thread_initiate(file_path, thread_priority, pcb_aux->PID, thread_qnty);
+    list_add(pcb_aux->TIDs, new_thread);
+    log_info(log, "## Hilo <Creado> - (PID:TID) - (<%d>:<%d>)", PID, thread_qnty); // Log obligatorio
 }

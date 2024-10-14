@@ -73,7 +73,6 @@ t_TCB get_thread(int PID, int TID)
 {
     // mutex para lista de registros
     int size_i = list_size(process_list);
-    t_register registers_return;
     t_PCB aux_pcb;
     t_TCB aux_tcb;
     for (int i = 0; i < size_i; i++)
@@ -90,6 +89,44 @@ t_TCB get_thread(int PID, int TID)
                     return aux_tcb;
                 }
             }
+        }
+    }
+}
+
+t_PCB process_initiate(int PID, int size)
+{
+    t_PCB pcb = malloc(sizeof(*pcb));
+    pcb->PID = PID;
+    pcb->size = size;
+    pcb->TIDs = list_create();
+
+    return pcb;
+}
+
+t_TCB thread_initiate(char *file_path, int thread_priority, int PID, int TID)
+{
+    t_TCB tcb = malloc(sizeof(*tcb));
+    tcb->TID = TID;
+    tcb->PID = PID;
+    tcb->priority = thread_priority;
+    tcb->instructions = list_create();
+    initiate_registers(&tcb->registers);
+    load_list_instructions(tcb->instructions, file_path);
+
+    return tcb;
+}
+
+t_PCB get_process(int PID)
+{
+    // mutex para lista de registros
+    int size_i = list_size(process_list);
+    t_PCB aux_pcb;
+    for (int i = 0; i < size_i; i++)
+    {
+        aux_pcb = list_get(process_list, i);
+        if (aux_pcb->PID == PID)
+        {
+            return aux_pcb;
         }
     }
 }

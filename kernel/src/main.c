@@ -49,7 +49,9 @@ int main(int argc, char *argv[])
     const int process_size = 58;
 
     // pruebas ----
-    /* thread_create(555, 666, "Prueba 1234");
+  /*   process_create(path_to_psdc, process_size, 0);
+    thread_create(1804289383, 666, "/home/utnso/Desktop/tp-2024-2c-La-Daneta/kernel/test_psdc/test.dat");
+
 
     readline("> "); */
     // ----
