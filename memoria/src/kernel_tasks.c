@@ -40,14 +40,13 @@ void atenderKernel(void *void_args)
 
 void process_create(int socket_kernel_mem)
 {
-    // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
     t_paquete *paquete = malloc(sizeof(t_paquete));
     crear_buffer(paquete);
 
     recv(socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
     paquete->buffer->stream = malloc(paquete->buffer->size);
     recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
-    // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
+
     uint32_t pid = buffer_read_uint32(paquete->buffer);
     uint32_t size = buffer_read_uint32(paquete->buffer);
     uint32_t priority = buffer_read_uint32(paquete->buffer);
@@ -56,7 +55,7 @@ void process_create(int socket_kernel_mem)
     eliminar_paquete(paquete);
     // cargar PCB recibido e inicializarlo con el TCB principal.
     t_PCB pcb = process_initiate(pid, size);
-    t_TCB tcb = thread_initiate(path_file, priority, pid, 0);
+    t_TCB tcb = thread_initiate(path_file, priority, pid, 0); // TID 0 por ser TCB principal.
     log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);

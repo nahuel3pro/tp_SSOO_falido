@@ -2,12 +2,10 @@
 
 void atenderCpu(void *void_args)
 {
-    // log_info(log, "atendiendo cpu con memoria...");
     t_procesar_conexion_args *args = (t_procesar_conexion_args *)void_args;
-    // t_log *logger = args->log;
     int *socket_cpu_mem = args->fd;
     free(args);
-    log_info(log, "## CPU Conectado - FD del socket: <%d>", *socket_cpu_mem);
+    log_info(log, "## CPU Conectado - FD del socket: <%d>", *socket_cpu_mem); // log obligatorio
     uint8_t op_code;
     while (1)
     {
@@ -16,9 +14,7 @@ void atenderCpu(void *void_args)
         switch (op_code)
         {
         case GET_EXECUTION_CONTEXT:
-            // recibir el pid del proceso
-            // buscarlo en la lista de procesos creados
-            // devolverle su contexto de ejecución.
+            log_info(log, "Dándole contexto de ejecución...");
             execution_context(*socket_cpu_mem);
             break;
         case UPDATE_CONTEXT:
@@ -39,11 +35,9 @@ void atenderCpu(void *void_args)
             // lo que me mandaste no tiene sentido
             break;
         }
-        // eliminar_paquete(paquete);
     }
     close(*socket_cpu_mem);
     free(socket_cpu_mem);
-    // free(args);
 }
 
 void execution_context(int socket)
@@ -98,7 +92,8 @@ void get_instruction(int socket)
 
     buffer_destroy(buffer_send);
 
-    // log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <INSTRUCCIÓN> <...ARGS>");
+    log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <%s>", instruction); // log obligatorio
+    // Preguntar si este log está bien, creo que voy a tener que "decodificarlo" primero :[
 }
 
 void update_context(int socket_cpu_mem)
