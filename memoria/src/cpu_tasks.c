@@ -14,15 +14,12 @@ void atenderCpu(void *void_args)
         switch (op_code)
         {
         case GET_EXECUTION_CONTEXT:
-            log_info(log, "Dándole contexto de ejecución...");
             execution_context(*socket_cpu_mem);
             break;
         case UPDATE_CONTEXT:
-            log_info(log, "Actualizando contexto de ejecución...");
             update_context(*socket_cpu_mem);
             break;
         case GET_INSTRUCTION:
-            log_info(log, "Dándole la instrucción...");
             get_instruction(*socket_cpu_mem);
             break;
         case READ_MEM:
@@ -52,14 +49,14 @@ void execution_context(int socket)
     uint32_t PID = buffer_read_uint32(paquete_recv->buffer);
     uint32_t TID = buffer_read_uint32(paquete_recv->buffer);
     eliminar_paquete(paquete_recv);
-    t_TCB thread_aux = get_thread(PID, TID); //--problema con registros
-    log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:%d>)", PID, TID);
+    t_TCB thread_aux = get_thread(PID, TID);
+    log_info(log, "## Contexto <Solicitado> - (PID:TID) - (<%d:%d>)", PID, TID); // log obligatorio
+
     t_buffer *buffer_registro = buffer_create(sizeof(t_register));
     serializar_registro(buffer_registro, thread_aux->registers);
     buffer_registro->offset = 0;
     retardo_respuesta();
     enviar_buffer(buffer_registro, socket);
-    log_info(log, "Mandando contexto de ejecución...");
     buffer_destroy(buffer_registro);
 }
 
@@ -78,7 +75,7 @@ void get_instruction(int socket)
 
     eliminar_paquete(paquete_recv);
 
-    t_TCB thread_aux = get_thread(PID,TID);
+    t_TCB thread_aux = get_thread(PID, TID);
     char *instruction = list_get(thread_aux->instructions, PC);
     //                                        Tamaño PL + tamaño del string  + "\0"
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 + strlen(instruction) + 1);
@@ -92,7 +89,7 @@ void get_instruction(int socket)
 
     buffer_destroy(buffer_send);
 
-    log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <%s>", instruction); // log obligatorio
+    log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <%s>", PID, TID, instruction); // log obligatorio
     // Preguntar si este log está bien, creo que voy a tener que "decodificarlo" primero :[
 }
 
@@ -115,6 +112,7 @@ void update_context(int socket_cpu_mem)
     // actualizar sus registros.
     t_TCB thread_aux = get_thread(PID, TID);
     update_registers(&thread_aux->registers, new_registers);
+    log_info(log, "## Contexto <Actualizado> - (PID:TID) - (<%d>:<%d>)", PID, TID); //Log obligatorio
     // mandar respuesta correcta a CPU?
     uint8_t res = SUCCESS;
 

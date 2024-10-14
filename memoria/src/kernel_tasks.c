@@ -56,7 +56,7 @@ void process_create(int socket_kernel_mem)
     // cargar PCB recibido e inicializarlo con el TCB principal.
     t_PCB pcb = process_initiate(pid, size);
     t_TCB tcb = thread_initiate(path_file, priority, pid, 0); // TID 0 por ser TCB principal.
-    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
+    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size); // log obligatorio
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);
 

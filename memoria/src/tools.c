@@ -69,30 +69,6 @@ void initiate_registers(t_register *registro)
     registro->limite = 0;
 }
 
-t_TCB get_thread(int PID, int TID)
-{
-    // mutex para lista de registros
-    int size_i = list_size(process_list);
-    t_PCB aux_pcb;
-    t_TCB aux_tcb;
-    for (int i = 0; i < size_i; i++)
-    {
-        aux_pcb = list_get(process_list, i);
-        if (aux_pcb->PID == PID)
-        {
-            int size_j = list_size(aux_pcb->TIDs);
-            for (int j = 0; j < size_j; i++)
-            {
-                aux_tcb = list_get(aux_pcb->TIDs, j);
-                if (aux_tcb->TID == TID)
-                {
-                    return aux_tcb;
-                }
-            }
-        }
-    }
-}
-
 t_PCB process_initiate(int PID, int size)
 {
     t_PCB pcb = malloc(sizeof(*pcb));
@@ -116,21 +92,6 @@ t_TCB thread_initiate(char *file_path, int thread_priority, int PID, int TID)
     return tcb;
 }
 
-t_PCB get_process(int PID)
-{
-    // mutex para lista de registros
-    int size_i = list_size(process_list);
-    t_PCB aux_pcb;
-    for (int i = 0; i < size_i; i++)
-    {
-        aux_pcb = list_get(process_list, i);
-        if (aux_pcb->PID == PID)
-        {
-            return aux_pcb;
-        }
-    }
-}
-
 void update_registers(t_register *mem_reg, t_register new_registers)
 {
     mem_reg->PC = new_registers.PC;
@@ -144,4 +105,30 @@ void update_registers(t_register *mem_reg, t_register new_registers)
     mem_reg->HX = new_registers.HX;
     mem_reg->base = new_registers.base;
     mem_reg->limite = new_registers.limite;
+}
+
+// experimento de encontrar PID o TID usando list_find
+
+t_PCB get_process(int PID)
+{
+    bool process_contains(void *ptr)
+    {
+        t_PCB aux_pcb = (t_PCB)ptr;
+        return aux_pcb->PID == PID;
+    }
+    // usar mutex acá
+    return list_find(process_list, process_contains);
+}
+
+t_TCB get_thread(int PID, int TID)
+{
+    bool process_contains_TID(void *ptr)
+    {
+        t_TCB aux_tcb = (t_TCB)ptr;
+        return aux_tcb->TID == TID;
+    }
+
+    t_PCB aux_pcb = get_process(PID);
+
+    return list_find(aux_pcb->TIDs, process_contains_TID);
 }
