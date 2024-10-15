@@ -23,7 +23,7 @@ void atenderKernel(void *void_args)
         break;
     case THREAD_CREATION:
         log_info(log, "Creando thread...");
-        send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
+        thread_create(*socket_kernel_mem);
         break;
     case MEMORY_DUMP:
         log_info(log, "Dumpeando...");
@@ -38,76 +38,25 @@ void atenderKernel(void *void_args)
     free(socket_kernel_mem);
 }
 
-void load_list_instructions(t_list *list_instructions, char *path)
-{
-    const int MAX_LINE_LENGTH = 256;
-    FILE *pseudocodigo;
-    char buffer[MAX_LINE_LENGTH];
-
-    pseudocodigo = fopen(path, "r");
-
-    if (pseudocodigo == NULL)
-    {
-        log_error(log, "No se pudo abrir el archivo.\n");
-        abort();
-    }
-
-    while (fgets(buffer, MAX_LINE_LENGTH, pseudocodigo) != NULL)
-    {
-        buffer[strcspn(buffer, "\n")] = '\0';
-        char *buffer_add = malloc(sizeof(buffer));
-        strcpy(buffer_add, buffer);
-        list_add(list_instructions, buffer_add);
-    }
-
-    fclose(pseudocodigo);
-}
-
-void initiate_registers(t_register *registro)
-{
-    registro->PC = 0;
-    registro->AX = 0;
-    registro->BX = 0;
-    registro->CX = 0;
-    registro->DX = 0;
-    registro->EX = 0;
-    registro->FX = 0;
-    registro->GX = 0;
-    registro->HX = 0;
-    registro->base = 0;
-    registro->limite = 0;
-}
-
 void process_create(int socket_kernel_mem)
 {
-    // Hacer lista de procesos, e inicializar correctamente el proceso que llega de kernel.
     t_paquete *paquete = malloc(sizeof(t_paquete));
     crear_buffer(paquete);
 
     recv(socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
     paquete->buffer->stream = malloc(paquete->buffer->size);
     recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
-    // Des-serealizando ---> Crear función. y liberar la memoria a quien corresponda.
+
     uint32_t pid = buffer_read_uint32(paquete->buffer);
     uint32_t size = buffer_read_uint32(paquete->buffer);
-    uint32_t str_size;
-    char *path_file = buffer_read_string(paquete->buffer, &str_size);
     uint32_t priority = buffer_read_uint32(paquete->buffer);
+    uint32_t str_size;
+    const char *path_file = buffer_read_string(paquete->buffer, &str_size);
+    eliminar_paquete(paquete);
     // cargar PCB recibido e inicializarlo con el TCB principal.
-    t_PCB pcb = malloc(sizeof(t_PCB));
-    pcb->PID = pid;
-    pcb->size = size;
-    pcb->TIDs = list_create();
-    t_TCB tcb = malloc(sizeof(t_TCB));
-    tcb->TID = 0;
-    tcb->PID = pid;
-    tcb->priority = priority;
-    tcb->instructions = list_create();
-    load_list_instructions(tcb->instructions, path_file); // Acá hay un problema de memoria o threads
-    t_register registro;
-    initiate_registers(&registro); // Acá hay un problema, por algún motivo
-    tcb->registers = registro;
-    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size);
+    t_PCB pcb = process_initiate(pid, size);
+    t_TCB tcb = thread_initiate(path_file, priority, pid, 0); // TID 0 por ser TCB principal.
+    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size); // log obligatorio
     list_add(process_list, pcb);
     list_add(pcb->TIDs, tcb);
 
@@ -117,5 +66,25 @@ void process_create(int socket_kernel_mem)
 
     uint8_t res = SUCCESS;
     send(socket_kernel_mem, &res, SIZEOF_UINT8, 0);
-    eliminar_paquete(paquete);
+}
+
+void thread_create(int socket_kernel_mem)
+{
+    uint32_t buffer_size;
+    recv(socket_kernel_mem, &buffer_size, SIZEOF_UINT32, 0);
+    t_buffer *buffer_rcv = buffer_create(buffer_size);
+    recv(socket_kernel_mem, buffer_rcv->stream, buffer_size, 0);
+
+    int PID = buffer_read_uint32(buffer_rcv);
+    int thread_priority = buffer_read_uint32(buffer_rcv);
+    int str_size;
+    char *file_path = buffer_read_string(buffer_rcv, &str_size);
+    buffer_destroy(buffer_rcv);
+    // Buscar PID para añadirle el thread
+    t_PCB pcb_aux = get_process(PID);
+    int thread_qnty = list_size(pcb_aux->TIDs);
+    t_TCB new_thread = thread_initiate(file_path, thread_priority, PID, thread_qnty);
+    thread_initiate(file_path, thread_priority, pcb_aux->PID, thread_qnty);
+    list_add(pcb_aux->TIDs, new_thread);
+    log_info(log, "## Hilo <Creado> - (PID:TID) - (<%d>:<%d>)", PID, thread_qnty); // Log obligatorio
 }

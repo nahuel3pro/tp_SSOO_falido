@@ -37,7 +37,6 @@ void block_return_tcb();
 // Procesos
 void process_exit(int pid);
 // Hilos
-void thread_create(int pid, int priority, char *file_path);
 void thread_exit(int tid);
 void thread_join(int tid_to_wait);
 void thread_cancel(int tid);

@@ -1,6 +1,5 @@
 #include "../include/operaciones_kernel.h"
 
-
 void atenderKernel()
 {
     pthread_t hilo_dispatch;
@@ -12,7 +11,7 @@ void atenderKernel()
 }
 
 void atenter_dispatch(void)
-{   
+{
     uint8_t op_code;
     int server_dispatch_fd;
     int client_dispatch_fd;
@@ -23,7 +22,7 @@ void atenter_dispatch(void)
     {
         client_dispatch_fd = esperar_cliente(log, server_dispatch_fd);
         recv(client_dispatch_fd, &op_code, SIZEOF_UINT8, MSG_WAITALL);
-        
+
         switch (op_code)
         {
         case DISPATCH:
@@ -44,16 +43,16 @@ void dispatch(int client_dispatch_fd)
 {
     uint32_t pid;
     uint32_t tid;
-    t_paquete * paquete = malloc(sizeof(t_paquete));
+    t_paquete *paquete = malloc(sizeof(t_paquete));
 
     crear_buffer(paquete);
 
     recv(client_dispatch_fd, &paquete->buffer->size, SIZEOF_UINT32, 0);
 
-    paquete->buffer->stream = malloc(paquete->buffer->size);    
+    paquete->buffer->stream = malloc(paquete->buffer->size);
 
     recv(client_dispatch_fd, paquete->buffer->stream, paquete->buffer->size, 0);
-    
+
     pid = buffer_read_uint32(paquete->buffer);
     tid = buffer_read_uint32(paquete->buffer);
 
@@ -61,15 +60,42 @@ void dispatch(int client_dispatch_fd)
 
     int memoria_fd = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
     send_handshake(log, memoria_fd, "CPU/MEMORIA", CPU);
-    char * instruccion;
+    char *instruccion;
     t_register registro;
 
-    fetch(memoria_fd, instruccion, &registro, pid, tid);
-    decode_execute(instruccion, &registro, pid, tid);
+    while(1)
+    {
+        instruccion = fetch(memoria_fd, &registro, pid, tid);
+        decode_execute(instruccion, &registro, pid, tid);
+        update_context(memoria_fd, registro, pid, tid);
+    }
+
 }
 
+void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid)
+{
+    t_paquete* paquete = crear_paquete(UPDATE_CONTEXT);
+    t_buffer* buffer = buffer_create(SIZEOF_UINT32 * 2 + sizeof(t_register));
+
+    buffer_add_uint32(buffer, pid);
+    buffer_add_uint32(buffer, tid);
+    serializar_registro(buffer, registro);
+    buffer->offset = 0;
+    paquete->buffer = buffer;
+
+    enviar_paquete(paquete, fd);
+    eliminar_paquete(paquete);
+
+    uint8_t resultado = 0;
+    recv(fd, &resultado, SIZEOF_UINT8, 0);
+
+    if(resultado != SUCCESS)
+    {
+        log_error(log, "Error al actualizar el contexto");
+        abort();
+    }
+}
 
 void atender_interrupt(void)
 {
-
 }

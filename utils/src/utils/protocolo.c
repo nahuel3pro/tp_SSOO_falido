@@ -326,9 +326,18 @@ void send_data(int op_code, t_buffer *buffer, int socket_cliente)
 
 void eliminar_paquete(t_paquete *paquete)
 {
-    free(paquete->buffer->stream);
-    free(paquete->buffer);
-    free(paquete);
+    if (paquete->buffer->stream != NULL)
+    {
+        free(paquete->buffer->stream);
+    }
+    if (paquete->buffer != NULL)
+    {
+        free(paquete->buffer);
+    }
+    if (paquete != NULL)
+    {
+        free(paquete);
+    }
 }
 
 t_paquete *crear_paquete(int codigo) // CREA BUFFER
