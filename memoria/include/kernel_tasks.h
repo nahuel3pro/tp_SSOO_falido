@@ -7,7 +7,7 @@
 #include <readline/readline.h>
 
 void atenderKernel(void *void_args);
-void load_list_instructions(t_list *list_instructions,char* path);
-void initiate_registers(t_register *registro);
+void process_create(int socket_kernel_mem);
+void thread_create(int socket_kernel_mem);
 
 #endif
