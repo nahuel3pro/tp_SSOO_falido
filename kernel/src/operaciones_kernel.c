@@ -131,9 +131,11 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
     case INSTRUCCION_THREAD_JOIN:
         // esta syscall recibe como parámetro un TID, mueve el hilo que la invocó al estado BLOCK hasta que el TID pasado por parámetro finalice.
         // En caso de que el TID pasado por parámetro no exista o ya haya finalizado, esta syscall no hace nada y el hilo que la invocó continuará su ejecución.
+
         log_info(log, "INSTRUCCION_THREAD_JOIN");
         tid = buffer_read_uint32(buffer_response);
         // Verificar que exista el TID y obtener el TCB
+
 
         // Si existe, Agregar TCB a lista BLOCK
         // list_add(blocked_queue, tcb)
@@ -258,6 +260,48 @@ t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex)
 
 void send_pcb_exit(int pid)
 {
+    //Buscar en cola de procesos y mandar a exit todos sus hilos
+    //t_PCB pcb_to_remove = remover_por_PID()
+
+    //Poner proceso en la lista de exit
+    //safe_pcb_add()
+    
+    //Avisa a memoria y le envia el pid del proceso a eliminar
+    send_to_mem(pid);
+}
+
+void send_to_mem(int pid)
+{
+    // Conectarse a memoria
+    int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
+    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
+
+    t_paquete *paquete_send = crear_paquete(PROCESS_KILL);
+    t_buffer *buffer_send = buffer_create(SIZEOF_UINT32);
+    buffer_add_uint32(buffer_send, (uint32_t)pid);
+
+    buffer_send->offset = 0;
+
+    paquete_send->buffer = buffer_send;
+    enviar_paquete(paquete_send, socket_cliente);
+    eliminar_paquete(paquete_send);
+}
+
+//Funciones para obtener o eliminar por pid de una lista (Revisar)
+t_PCB remover_por_PID(t_list* lista, uint32_t numero)
+{
+    bool equivaleAlPID(t_PCB proceso){
+        return numero == proceso->PID;
+    }
+    return list_remove_by_condition(lista, equivaleAlPID);
+}
+
+bool encontrarProceso(t_list* lista, uint32_t numero)
+{
+    bool equivaleAlPID(t_PCB proceso){
+        return numero == proceso->PID;
+    }
+    return list_any_satisfy(lista, equivaleAlPID);
     // Buscar en cola de procesos y mandar a exit todos sus hilos
 }
 
@@ -274,4 +318,5 @@ void send_tid_exit(int pid, int tid)
 void mutex_create(int pid, char *mutex_name)
 {
     log_info(log, "Creando mutex en proceso: %d y con nombre %s", pid, mutex_name);
+
 }

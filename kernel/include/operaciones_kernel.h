@@ -5,6 +5,7 @@
 #include "operaciones_cpu.h"
 #include <stdio.h>
 #include <stdlib.h>
+#include "operaciones_memoria.h"
 
 #define MAX_OPERACIONES_LENGTH 20
 #define MAX_NOMBRE 100
@@ -37,6 +38,7 @@ void block_return_tcb();
 // Procesos
 void process_exit(int pid);
 // Hilos
+//void thread_create(int pid, int priority, char *file_path);
 void thread_exit(int tid);
 void thread_join(int tid_to_wait);
 void thread_cancel(int tid);
@@ -66,4 +68,9 @@ void send_pid_exit(int pid);
 void send_tid_exit(int pid, int tid);
 void mutex_create(int pid, char* recurso);
 
+void send_pcb_exit(int pid);
+void send_to_mem(int pid);
+
+t_PCB remover_por_PID(t_list* lista, uint32_t numero);
+bool encontrarProceso(t_list* lista, uint32_t numero);
 #endif // H_OPERACIONES_KERNEL_H
