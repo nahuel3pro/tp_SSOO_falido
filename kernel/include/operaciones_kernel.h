@@ -65,7 +65,7 @@ void unlock_mutex(char *mutex_name);
 
 void atender_motivo(char * motivo,t_buffer* buffer_response);
 void send_pid_exit(int pid);
-void send_tid_exit(int pid, int tid);
+void send_tid_exit(t_TCB tcb);
 void mutex_create(int pid, char* recurso);
 
 void send_pcb_exit(int pid);

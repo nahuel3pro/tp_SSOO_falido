@@ -43,6 +43,7 @@ void process_create(char *filename, int process_size, int main_thread_priority)
     {
         // Enviar el proceso a la cola READY.
         list_add(ready_list, main_thread);
+        list_add(process_list, new_process);
         log_trace(log, "Proceso creado exitosamente y enviado a la cola READY!");
     }
     else
@@ -65,12 +66,15 @@ void thread_create(int pid, int thread_priority, char *file_path)
     buffer_add_string(buffer_send, file_path);
     buffer_send->offset = 0;
     paquete->buffer = buffer_send;
-    
+
     // Creando conexión con memoria
     int socket_mem = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
     if (send_handshake(log, socket_mem, "KERNEL/MEMORIA", KERNEL))
     {
         enviar_paquete(paquete, socket_mem);
+        t_TCB new_thread = malloc(sizeof(*new_thread));
+        t_PCB aux_pcb = get_process(pid);
+        list_add(aux_pcb->TIDs, new_thread);
     }
     else
     {
@@ -78,5 +82,5 @@ void thread_create(int pid, int thread_priority, char *file_path)
     }
 
     eliminar_paquete(paquete);
+    close(socket_mem);
 }
-

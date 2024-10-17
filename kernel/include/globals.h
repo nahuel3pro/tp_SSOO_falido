@@ -43,11 +43,11 @@ extern sem_t sem_block_return;
 extern sem_t ongoing_fs_mem_op;
 extern sem_t fin_f_open;
 
-// queue
+// queue - listas
+extern t_list *process_list;
 extern t_queue *new_queue;
 extern t_list *ready_list;
 extern t_list *blocked_queue;
-extern t_list *exit_queue;
-extern t_list *dependency_queue;
+extern t_queue *exit_queue;
 
 #endif

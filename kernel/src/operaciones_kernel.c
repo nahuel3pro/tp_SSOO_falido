@@ -68,7 +68,7 @@ void exec_tcb()
     {
         /*  sem_wait(&sem_ready);
          sem_wait(&sem_exec); */
-        log_info(log, "Eligiendo TCB...");
+        log_trace(log, "Eligiendo TCB...");
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
         int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
@@ -136,7 +136,6 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         tid = buffer_read_uint32(buffer_response);
         // Verificar que exista el TID y obtener el TCB
 
-
         // Si existe, Agregar TCB a lista BLOCK
         // list_add(blocked_queue, tcb)
 
@@ -154,14 +153,16 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
 
         // Verificar que exista el TID y obtener el TCB
         // Si existe, Agregar TCB a lista EXIT y avisar a memoria
-        send_tid_exit(pid, tid_to_end);
+        //send_tid_exit(pid, tid_to_end);
         break;
     case INSTRUCCION_THREAD_EXIT:
         //  esta syscall finaliza al hilo que lo invocó, pasando el mismo al estado EXIT.
         //  Se deberá indicar a la Memoria la finalización de dicho hilo.
-        log_info(log, "INSTRUCCION_THREAD_EXIT");
+        pid = buffer_read_uint32(buffer_response);
         tid = buffer_read_uint32(buffer_response);
-        send_tid_exit(pid, tid);
+        log_info(log, "## (<%d>:<%d>) Finaliza el hilo", pid, tid);
+        t_TCB thread_aux = get_thread(pid, tid);
+        send_tid_exit(thread_aux);
         break;
     case INSTRUCCION_MUTEX_CREATE:
         // crea un nuevo mutex para el proceso sin asignar a ningún hilo.
@@ -260,13 +261,13 @@ t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex)
 
 void send_pcb_exit(int pid)
 {
-    //Buscar en cola de procesos y mandar a exit todos sus hilos
-    //t_PCB pcb_to_remove = remover_por_PID()
+    // Buscar en cola de procesos y mandar a exit todos sus hilos
+    // t_PCB pcb_to_remove = remover_por_PID()
 
-    //Poner proceso en la lista de exit
-    //safe_pcb_add()
-    
-    //Avisa a memoria y le envia el pid del proceso a eliminar
+    // Poner proceso en la lista de exit
+    // safe_pcb_add()
+
+    // Avisa a memoria y le envia el pid del proceso a eliminar
     send_to_mem(pid);
 }
 
@@ -287,36 +288,44 @@ void send_to_mem(int pid)
     eliminar_paquete(paquete_send);
 }
 
-//Funciones para obtener o eliminar por pid de una lista (Revisar)
-t_PCB remover_por_PID(t_list* lista, uint32_t numero)
+// Funciones para obtener o eliminar por pid de una lista (Revisar)
+t_PCB remover_por_PID(t_list *lista, uint32_t numero)
 {
-    bool equivaleAlPID(t_PCB proceso){
+    bool equivaleAlPID(t_PCB proceso)
+    {
         return numero == proceso->PID;
     }
     return list_remove_by_condition(lista, equivaleAlPID);
 }
 
-bool encontrarProceso(t_list* lista, uint32_t numero)
+bool encontrarProceso(t_list *lista, uint32_t numero)
 {
-    bool equivaleAlPID(t_PCB proceso){
+    bool equivaleAlPID(t_PCB proceso)
+    {
         return numero == proceso->PID;
     }
     return list_any_satisfy(lista, equivaleAlPID);
     // Buscar en cola de procesos y mandar a exit todos sus hilos
 }
 
-void send_pid_exit(int pid)
+void send_pid_exit(int PID)
 {
-    log_info(log, "Matando el proceso <PID> : <%d>", pid);
+    void exit_process(void *ptr)
+    {
+        t_TCB tcb = (t_TCB)ptr;
+        send_tid_exit(tcb);
+    }
+    t_PCB pcb_to_remove = get_process(PID);
+    list_iterate(pcb_to_remove->TIDs, exit_process);
 }
 
-void send_tid_exit(int pid, int tid)
+void send_tid_exit(t_TCB tcb)
 {
-    log_info(log, "Matando el hilo de <PID:TID> : <%d:%d>", pid, tid);
+    queue_push(exit_queue, tcb);
+    list_remove_element(ready_list, tcb);
 }
 
 void mutex_create(int pid, char *mutex_name)
 {
     log_info(log, "Creando mutex en proceso: %d y con nombre %s", pid, mutex_name);
-
 }

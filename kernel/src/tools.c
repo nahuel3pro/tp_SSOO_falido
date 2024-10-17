@@ -41,17 +41,8 @@ void initiate_registers(t_register *my_register)
     my_register->HX = 0;
 }
 
-bool thread_is_waiting(int tid)
+bool thread_is_waiting(int pid, int tid)
 {
-    int aux;
-    int size = list_size(dependency_queue);
-    for (int i = 0; i < size; i++)
-    {
-        if (list_get(dependency_queue, i) == tid)
-        {
-            return true;
-        }
-    }
 
     return false;
 }
@@ -59,4 +50,28 @@ bool thread_is_waiting(int tid)
 bool _has_equal_tid(int tid, int tid_queue)
 {
     return (tid == tid_queue);
+}
+
+t_PCB get_process(int PID)
+{
+    bool process_contains(void *ptr)
+    {
+        t_PCB aux_pcb = (t_PCB)ptr;
+        return aux_pcb->PID == PID;
+    }
+    // usar mutex acá
+    return list_find(process_list, process_contains);
+}
+
+t_TCB get_thread(int PID, int TID)
+{
+    bool process_contains_TID(void *ptr)
+    {
+        t_TCB aux_tcb = (t_TCB)ptr;
+        return aux_tcb->TID == TID;
+    }
+
+    t_PCB aux_pcb = get_process(PID);
+
+    return list_find(aux_pcb->TIDs, process_contains_TID);
 }

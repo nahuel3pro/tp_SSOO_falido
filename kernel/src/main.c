@@ -1,10 +1,10 @@
 #include "../include/main.h"
 
+t_list *process_list;
 t_queue *new_queue;
 t_list *ready_list;
-t_list *exit_queue;
+t_queue *exit_queue;
 t_list *blocked_queue;
-t_list *dependency_queue;
 
 
 t_dictionary *dict;
@@ -125,11 +125,11 @@ void asignar_algoritmo(char *algoritmo)
 
 void inicializar_variables()
 {
-    exit_queue = list_create();
+    process_list = list_create(); 
+    exit_queue = queue_create();
     new_queue = queue_create();
     ready_list = list_create();
     blocked_queue = list_create();
-    dependency_queue = list_create();
     // fs_mem_op_count = 0;
 
     // Semaforos
