@@ -45,7 +45,7 @@ void process_create(char *filename, int process_size, int main_thread_priority)
         list_add(ready_list, main_thread);
         // mutex process_list
         list_add(process_list, new_process);
-        safe_tcb_add(process_list, main_thread);
+        // safe_tcb_add(process_list, main_thread);
         log_trace(log, "Proceso creado exitosamente y enviado a la cola READY!");
     }
     else

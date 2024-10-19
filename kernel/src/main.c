@@ -3,7 +3,7 @@
 t_list *process_list;
 t_queue *new_queue;
 t_list *ready_list;
-t_queue *exit_queue;
+t_list *exit_queue;
 t_list *blocked_queue;
 
 
@@ -14,6 +14,8 @@ char *algoritmo;
 t_algoritmo ALGORITMO_PLANIFICACION = 0;
 
 // Semaforos y pthread
+pthread_mutex_t mutex_cola_procesos;
+
 pthread_mutex_t mutex_generador_pid;
 pthread_mutex_t mutex_cola_ready;
 pthread_mutex_t mutex_cola_listos_para_ready;
@@ -126,13 +128,15 @@ void asignar_algoritmo(char *algoritmo)
 void inicializar_variables()
 {
     process_list = list_create(); 
-    exit_queue = queue_create();
+    exit_queue = list_create();
     new_queue = queue_create();
     ready_list = list_create();
     blocked_queue = list_create();
     // fs_mem_op_count = 0;
 
     // Semaforos
+    pthread_mutex_init(&mutex_cola_procesos, NULL);
+
     pthread_mutex_init(&mutex_generador_pid, NULL);
     pthread_mutex_init(&mutex_cola_ready, NULL);
     pthread_mutex_init(&mutex_cola_listos_para_ready, NULL);

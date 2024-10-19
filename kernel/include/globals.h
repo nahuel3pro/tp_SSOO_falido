@@ -26,6 +26,8 @@ extern t_config *config;
 extern t_log *log;
 
 // Semaforos y pthread
+extern pthread_mutex_t mutex_cola_procesos;
+
 extern pthread_mutex_t mutex_generador_pid;
 extern pthread_mutex_t mutex_cola_ready;
 extern pthread_mutex_t mutex_cola_listos_para_ready;
@@ -48,6 +50,6 @@ extern t_list *process_list;
 extern t_queue *new_queue;
 extern t_list *ready_list;
 extern t_list *blocked_queue;
-extern t_queue *exit_queue;
+extern t_list *exit_queue;
 
 #endif

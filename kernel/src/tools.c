@@ -60,7 +60,12 @@ t_PCB get_process(int PID)
         return aux_pcb->PID == PID;
     }
     // usar mutex acá
-    return list_find(process_list, process_contains);
+
+    pthread_mutex_lock(&mutex_cola_procesos);
+    t_TCB tcb_aux = list_find(process_list, process_contains);
+    pthread_mutex_unlock(&mutex_cola_procesos);
+
+    return tcb_aux;
 }
 
 t_TCB get_thread(int PID, int TID)
