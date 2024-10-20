@@ -72,7 +72,7 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         uint32_t tid_dependency = buffer_read_uint32(buffer_response);
         // Verificar que exista el TID y obtener el TCB
         t_TCB tcb_aux;
-        if ((tcb_aux = get_thread(pid, tid)) != NULL)
+        if ((tcb_aux = get_thread(pid, tid_dependency)) != NULL)
         {
             tcb_aux->TID_wait = tid;
             // Si existe, Agregar TCB a lista BLOCK
@@ -102,8 +102,7 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         pid = buffer_read_uint32(buffer_response);
         tid = buffer_read_uint32(buffer_response);
         log_info(log, "## (<%d>:<%d>) Finaliza el hilo", pid, tid);
-        t_TCB thread_to_exit = get_thread(pid, tid);
-        send_tid_exit(thread_to_exit);
+        send_tid_exit();
         break;
     case INSTRUCCION_MUTEX_CREATE:
         // crea un nuevo mutex para el proceso sin asignar a ningún hilo.

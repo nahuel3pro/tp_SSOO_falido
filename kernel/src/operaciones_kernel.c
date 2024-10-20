@@ -22,10 +22,8 @@ void planificar_largo_plazo()
     pthread_t hilo_block;
     pthread_create(&hilo_ready, NULL, (void *)ready_tcb, NULL);
     pthread_create(&hilo_exit, NULL, (void *)exit_tcb, NULL);
-    pthread_create(&hilo_block, NULL, (void *)block_return_tcb, NULL);
     pthread_detach(hilo_exit);
     pthread_detach(hilo_ready);
-    pthread_detach(hilo_block);
 }
 
 void exit_tcb(void)
@@ -48,17 +46,6 @@ void ready_tcb(void) // Procesos de la cola NEW para mandarlos a READY
         t_TCB aux = list_get(pcb->TIDs, 0);
         sem_post(&sem_ready);
         process_create(aux->file_path, pcb->size, aux->priority);
-    }
-}
-
-void block_return_tcb()
-{
-    while (1)
-    {
-        sem_wait(&sem_block_return);
-        t_TCB tcb = safe_tcb_remove(blocked_queue, &mutex_cola_block);
-        // set_tcb_ready(tcb);
-        sem_post(&sem_ready);
     }
 }
 
@@ -88,19 +75,18 @@ t_TCB elegir_tcb_segun_algoritmo()
     case FIFO:
         return safe_tcb_remove(ready_list, &mutex_cola_ready);
     case PRIORIDADES:
-        log_info(log, "Algoritmo de prioridades");
         return safe_tcb_remove(list_sorted(ready_list, _has_less_priority), &mutex_cola_ready);
         break;
     case CMN:
         log_info(log, "CMN");
         break;
     default:
-        log_error(log, "No se reconocio el algoritmo de planifacion");
-        exit(1);
+        log_error(log, "No se reconoció el algoritmo de planifación");
+        abort();
     }
 }
 
-void safe_tcb_add(t_list *list, t_TCB *tcb, pthread_mutex_t *mutex)
+void safe_tcb_add(t_list *list, t_TCB tcb, pthread_mutex_t *mutex)
 {
     pthread_mutex_lock(mutex);
     list_add(list, tcb);

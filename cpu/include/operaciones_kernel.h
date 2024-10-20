@@ -12,6 +12,7 @@ void dispatch(int client_dispatch_fd);
 
 
 void atender_interrupt(void);
+bool check_interrupt();
 
 void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid);
 

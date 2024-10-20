@@ -88,8 +88,8 @@ void get_instruction(int socket)
     enviar_buffer(buffer_send, socket);
 
     buffer_destroy(buffer_send);
-
-    log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - Instrucción: <%s>", PID, TID, instruction); // log obligatorio
+    char** args = string_n_split(instruction,2," ");
+    log_info(log, "## Obtener instrucción - (PID:TID) - (<%d>:<%d>) - <%s> <%s>", PID, TID, args[0], args[1]); // log obligatorio
     // Preguntar si este log está bien, creo que voy a tener que "decodificarlo" primero :[
 }
 

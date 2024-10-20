@@ -15,12 +15,12 @@ void atenter_dispatch(void)
     uint8_t op_code;
     int server_dispatch_fd;
     int client_dispatch_fd;
-    // Memoria como sv
+
     server_dispatch_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA_DISPATCH"));
+    client_dispatch_fd = esperar_cliente(log, server_dispatch_fd);
 
     while (1)
     {
-        client_dispatch_fd = esperar_cliente(log, server_dispatch_fd);
         recv(client_dispatch_fd, &op_code, SIZEOF_UINT8, MSG_WAITALL);
 
         switch (op_code)
@@ -63,19 +63,18 @@ void dispatch(int client_dispatch_fd)
     char *instruccion;
     t_register registro;
 
-    while(1)
+    while (check_interrupt())
     {
         instruccion = fetch(memoria_fd, &registro, pid, tid);
         decode_execute(instruccion, &registro, pid, tid);
         update_context(memoria_fd, registro, pid, tid);
     }
-
 }
 
 void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid)
 {
-    t_paquete* paquete = crear_paquete(UPDATE_CONTEXT);
-    t_buffer* buffer = buffer_create(SIZEOF_UINT32 * 2 + sizeof(t_register));
+    t_paquete *paquete = crear_paquete(UPDATE_CONTEXT);
+    t_buffer *buffer = buffer_create(SIZEOF_UINT32 * 2 + sizeof(t_register));
 
     buffer_add_uint32(buffer, pid);
     buffer_add_uint32(buffer, tid);
@@ -89,13 +88,31 @@ void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid)
     uint8_t resultado = 0;
     recv(fd, &resultado, SIZEOF_UINT8, 0);
 
-    if(resultado != SUCCESS)
+    if (resultado != SUCCESS)
     {
         log_error(log, "Error al actualizar el contexto");
         abort();
     }
 }
 
+bool check_interrupt()
+{
+    sem_wait(&interrupt);
+    bool aux = flag_interrupt;
+    sem_post(&interrupt);
+
+    return aux;
+}
+
 void atender_interrupt(void)
 {
+    int server_dispatch_fd;
+    int client_dispatch_fd;
+
+    server_dispatch_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT"));
+    client_dispatch_fd = esperar_cliente(log, server_dispatch_fd);
+
+    sem_wait(&interrupt);
+    flag_interrupt = false;
+    sem_post(&interrupt);
 }

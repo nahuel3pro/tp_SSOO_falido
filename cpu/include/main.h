@@ -13,6 +13,6 @@
 #include "tools.h"
 #include "globals.h"
 #include "operaciones_kernel.h"
-
+void inicializar_variables();
 
 #endif
