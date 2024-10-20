@@ -13,4 +13,8 @@ t_PCB get_process(int PID);
 t_PCB process_initiate(int PID, int size);
 void update_registers(t_register *mem_reg, t_register new_registers);
 
+void safe_pcb_add(t_list *list, t_PCB pcb, pthread_mutex_t *mutex);
+t_PCB safe_pcb_remove(t_list *list, pthread_mutex_t *mutex);
+
+
 #endif

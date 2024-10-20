@@ -107,6 +107,22 @@ void update_registers(t_register *mem_reg, t_register new_registers)
     mem_reg->limite = new_registers.limite;
 }
 
+void safe_pcb_add(t_list *list, t_PCB pcb, pthread_mutex_t *mutex)
+{
+    pthread_mutex_lock(mutex);
+    list_add(list, pcb);
+    pthread_mutex_unlock(mutex);
+}
+
+t_PCB safe_pcb_remove(t_list *list, pthread_mutex_t *mutex)
+{
+    t_PCB pcb;
+    pthread_mutex_lock(mutex);
+    pcb = list_remove(list, 0);
+    pthread_mutex_unlock(mutex);
+    return pcb;
+}
+
 // experimento de encontrar PID o TID usando list_find
 
 t_PCB get_process(int PID)
@@ -117,7 +133,10 @@ t_PCB get_process(int PID)
         return aux_pcb->PID == PID;
     }
     // usar mutex acá
-    return list_find(process_list, process_contains);
+    pthread_mutex_lock(&mutex_process_list);
+    t_TCB aux_tcb = list_find(process_list, process_contains);
+    pthread_mutex_unlock(&mutex_process_list);
+    return aux_tcb;
 }
 
 t_TCB get_thread(int PID, int TID)

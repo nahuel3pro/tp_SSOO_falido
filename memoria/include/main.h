@@ -9,5 +9,6 @@
 #include <unistd.h>
 #include <readline/readline.h>
 
+void var_initiate(void);
 
 #endif

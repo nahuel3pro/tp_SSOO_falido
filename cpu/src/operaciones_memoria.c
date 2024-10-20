@@ -38,7 +38,6 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
 {
 
     char **array = string_split(instruction, " ");
-    log_info(log, "Decodificando");
     t_dictionary *dic = dict_protocol();
     uint32_t valor1;
     uint32_t valor2;

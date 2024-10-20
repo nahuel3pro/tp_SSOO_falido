@@ -2,15 +2,14 @@
 t_config *config;
 t_log *log;
 t_list *process_list;
+pthread_mutex_t mutex_process_list;
 
 int main(int argc, char *argv[])
 {
+    var_initiate();
+
     int server_fd = 0;
     int client_fd = 0;
-
-    config = levantar_config(getcwd(NULL, 0), "memoria");
-    log = levantar_log(getcwd(NULL, 0), "memoria", config_get_string_value(config, "LOG_LEVEL"));
-    process_list = list_create();
 
     // Memoria como sv
     server_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA"));
@@ -39,4 +38,12 @@ int main(int argc, char *argv[])
     }
 
     return EXIT_SUCCESS;
+}
+
+void var_initiate(void)
+{
+    config = levantar_config(getcwd(NULL, 0), "memoria");
+    log = levantar_log(getcwd(NULL, 0), "memoria", config_get_string_value(config, "LOG_LEVEL"));
+    process_list = list_create();
+    pthread_mutex_init(&mutex_process_list, NULL);
 }

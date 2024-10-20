@@ -56,14 +56,13 @@ void process_create(int socket_kernel_mem)
     // cargar PCB recibido e inicializarlo con el TCB principal.
     t_PCB pcb = process_initiate(pid, size);
     t_TCB tcb = thread_initiate(path_file, priority, pid, 0); // TID 0 por ser TCB principal.
-    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size); // log obligatorio
-    list_add(process_list, pcb);
+    safe_pcb_add(process_list, pcb, &mutex_process_list);
     list_add(pcb->TIDs, tcb);
 
     // Demorar tiempo y responder
-    int wait_time = config_get_int_value(config, "RETARDO_RESPUESTA");
-    usleep(wait_time); // Espera de un segundo
-
+    retardo_respuesta();
+    log_info(log, "## Proceso <Creado> -  PID: <%d> - Tamaño: <%d>", pid, size); // log obligatorio
+    
     uint8_t res = SUCCESS;
     send(socket_kernel_mem, &res, SIZEOF_UINT8, 0);
 }
