@@ -28,22 +28,15 @@ extern t_log *log;
 // Semaforos y pthread
 extern pthread_mutex_t mutex_cola_procesos;
 
-extern pthread_mutex_t mutex_generador_pid;
+extern pthread_mutex_t mutex_cola_new;
 extern pthread_mutex_t mutex_cola_ready;
-extern pthread_mutex_t mutex_cola_listos_para_ready;
 extern pthread_mutex_t mutex_cola_exit;
-extern pthread_mutex_t mutex_cola_exec;
 extern pthread_mutex_t mutex_cola_block;
-extern pthread_mutex_t mutex_cola_block_io;
-extern pthread_mutex_t mutex_cola_block_fs;
-extern sem_t sem_multiprog;
 extern sem_t sem_new;
 extern sem_t sem_ready;
 extern sem_t sem_exec;
 extern sem_t sem_exit;
 extern sem_t sem_block_return;
-extern sem_t ongoing_fs_mem_op;
-extern sem_t fin_f_open;
 
 // queue - listas
 extern t_list *process_list;

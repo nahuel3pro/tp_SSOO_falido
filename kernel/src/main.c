@@ -6,7 +6,6 @@ t_list *ready_list;
 t_list *exit_queue;
 t_list *blocked_queue;
 
-
 t_dictionary *dict;
 t_config *config;
 t_log *log;
@@ -16,21 +15,15 @@ t_algoritmo ALGORITMO_PLANIFICACION = 0;
 // Semaforos y pthread
 pthread_mutex_t mutex_cola_procesos;
 
-pthread_mutex_t mutex_generador_pid;
+pthread_mutex_t mutex_cola_new;
 pthread_mutex_t mutex_cola_ready;
-pthread_mutex_t mutex_cola_listos_para_ready;
 pthread_mutex_t mutex_cola_exit;
-pthread_mutex_t mutex_cola_exec;
 pthread_mutex_t mutex_cola_block;
-pthread_mutex_t mutex_cola_block_io;
-pthread_mutex_t mutex_cola_block_fs;
-sem_t sem_multiprog;
 sem_t sem_new;
 sem_t sem_ready;
 sem_t sem_exec;
 sem_t sem_exit;
 sem_t sem_block_return;
-sem_t ongoing_fs_mem_op;
 
 int main(int argc, char *argv[])
 {
@@ -63,7 +56,6 @@ int main(int argc, char *argv[])
     // Conectarse a memoria
     readline("> ");
 
-
     return SUCCESS;
 }
 
@@ -86,7 +78,7 @@ void asignar_algoritmo(char *algoritmo)
 
 void inicializar_variables()
 {
-    process_list = list_create(); 
+    process_list = list_create();
     exit_queue = list_create();
     new_queue = queue_create();
     ready_list = list_create();
@@ -96,26 +88,22 @@ void inicializar_variables()
     // Semaforos
     pthread_mutex_init(&mutex_cola_procesos, NULL);
 
-    pthread_mutex_init(&mutex_generador_pid, NULL);
+    pthread_mutex_init(&mutex_cola_new, NULL);
     pthread_mutex_init(&mutex_cola_ready, NULL);
-    pthread_mutex_init(&mutex_cola_listos_para_ready, NULL);
     pthread_mutex_init(&mutex_cola_exit, NULL);
-    pthread_mutex_init(&mutex_cola_exec, NULL);
     pthread_mutex_init(&mutex_cola_block, NULL);
-    pthread_mutex_init(&mutex_cola_block_io, NULL);
-    pthread_mutex_init(&mutex_cola_block_fs, NULL);
 
     sem_init(&sem_new, 0, 0);
     sem_init(&sem_ready, 0, 0);
     sem_init(&sem_exec, 0, 1);
     sem_init(&sem_exit, 0, 0);
     sem_init(&sem_block_return, 0, 0);
-    sem_init(&ongoing_fs_mem_op, 0, 1);
 }
 
-void planificar(){
+void planificar()
+{
     planificar_largo_plazo();
-	log_trace(log, "Se inició la planificacion de largo plazo");
-	planificar_corto_plazo();
-	log_trace(log, "Se inició la planificacion de corto plazo");
+    log_trace(log, "Se inició la planificacion de largo plazo");
+    planificar_corto_plazo();
+    log_trace(log, "Se inició la planificacion de corto plazo");
 }

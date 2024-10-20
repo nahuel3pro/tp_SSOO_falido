@@ -84,6 +84,7 @@ void thread_create(int pid, int thread_priority, char *file_path)
         t_TCB new_thread = malloc(sizeof(*new_thread));
         t_PCB aux_pcb = get_process(pid);
         list_add(aux_pcb->TIDs, new_thread);
+        safe_tcb_add(ready_list, new_thread, &mutex_cola_ready);
     }
     else
     {

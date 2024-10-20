@@ -96,11 +96,11 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
 
         if (tcb_aux != NULL)
         {
-            pthread_mutex_lock(&mutex_cola_exec);
+            pthread_mutex_lock(&mutex_cola_ready);
             pthread_mutex_lock(&mutex_cola_exit);
             list_remove_element(ready_list, tcb_aux);
             list_add(exit_queue, tcb_aux);
-            pthread_mutex_unlock(&mutex_cola_exec);
+            pthread_mutex_unlock(&mutex_cola_ready);
             pthread_mutex_unlock(&mutex_cola_exit);
         }
         // Verificar que exista el TID y obtener el TCB

@@ -50,15 +50,16 @@ void ready_tcb(void) // Procesos de la cola NEW para mandarlos a READY
     while (1)
     {
         sem_wait(&sem_new); // cola new
-        t_PCB pcb = safe_pcb_remove(new_queue, &mutex_cola_listos_para_ready);
-        t_TCB aux = list_get(pcb->TIDs, 0);
+        t_PCB pcb_aux = safe_pcb_remove(new_queue, &mutex_cola_new);
+        t_TCB tcb_aux = list_get(pcb_aux->TIDs, 0);
         // sem_post(&sem_ready);
-        process_create(aux->file_path, pcb->size, aux->priority);
+        process_create(tcb_aux->file_path, pcb_aux->size, tcb_aux->priority);
     }
 }
 
 void exec_tcb()
 {
+    int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
     while (1)
     {
         sem_wait(&sem_ready);
@@ -66,7 +67,6 @@ void exec_tcb()
         log_trace(log, "Eligiendo TCB...");
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
-        int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
         dispatch(tcb, fd);
         t_buffer *buffer_response = malloc(sizeof(t_buffer));
         buffer_recv(fd, buffer_response);
@@ -172,7 +172,7 @@ void send_pid_exit(int PID)
     {
         t_TCB tcb_aux = (t_TCB)ptr;
         // sacarlos de la lista de ready y mandarlos a exit
-        sem_wait(&sem_exec);
+        sem_wait(&sem_ready);
         list_remove_element(ready_list, tcb_aux);
         safe_tcb_add(exit_queue, tcb_aux, &mutex_cola_exit);
         sem_post(&sem_exit);
