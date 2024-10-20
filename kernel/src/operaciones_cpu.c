@@ -25,13 +25,13 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
     int priority;
     char *path_to_psdc;
     int srt_size;
+    t_TCB tcb_aux;
     switch (instruccion)
     {
     case INSTRUCCION_PROCESS_CREATE:
         // esta syscall recibirá 3 parámetros de la CPU, el primero será el nombre del archivo de pseudocódigo que deberá ejecutar el proceso,
         // el segundo parámetro es el tamaño del proceso en Memoria y el tercer parámetro es la prioridad del hilo main (TID 0).
         // El Kernel creará un nuevo PCB y un TCB asociado con TID 0 y lo dejará en estado NEW.
-        log_info(log, "INSTRUCCION_PROCESS_CREATE");
         int srt_size;
         path_to_psdc = buffer_read_string(buffer_response, srt_size);
         int process_size = buffer_read_uint32(buffer_response);
@@ -44,7 +44,6 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
     case INSTRUCCION_PROCESS_EXIT:
         // esta syscall finalizará el PCB correspondiente al TCB que ejecutó la instrucción, enviando todos sus TCBs asociados a la cola de EXIT.
         // Esta instrucción sólo será llamada por el TID 0 del proceso y le deberá indicar a la memoria la finalización de dicho proceso.
-        log_info(log, "INSTRUCCION_PROCESS_EXIT");
         tid = buffer_read_uint32(buffer_response);
         pid = buffer_read_uint32(buffer_response);
         if (tid == 0)
@@ -71,7 +70,6 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         tid = buffer_read_uint32(buffer_response);
         uint32_t tid_dependency = buffer_read_uint32(buffer_response);
         // Verificar que exista el TID y obtener el TCB
-        t_TCB tcb_aux;
         if ((tcb_aux = get_thread(pid, tid_dependency)) != NULL)
         {
             tcb_aux->TID_wait = tid;
@@ -79,7 +77,7 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
             t_TCB thread_to_block = safe_tcb_remove(ready_list, &mutex_cola_ready);
             // list_add(blocked_queue, tcb)
             safe_tcb_add(blocked_queue, thread_to_block, &mutex_cola_block);
-            log_info(log, "## (<%d>:<%d>) - Bloqueado por: <PTHREAD_JOIN>", pid, tid);
+            log_info(log, "## (<%d>:<%d>) - Bloqueado por: <PTHREAD_JOIN>", pid, tid); //log obligatorio.
         }
         log_trace(log, "El hilo no existe");
         break;
@@ -88,10 +86,18 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         //  Se deberá indicar a la Memoria la finalización de dicho hilo.
         //  En caso de que el TID pasado por parámetro no exista o ya haya finalizado, esta syscall no hace nada.
         //  Finalmente, el hilo que la invocó continuará su ejecución.
-        log_info(log, "INSTRUCCION_THREAD_CANCEL");
         uint32_t tid_to_end = buffer_read_uint32(buffer_response);
         pid = buffer_read_uint32(buffer_response);
+        tcb_aux = get_thread(pid, tid_to_end);
 
+        if(tcb_aux != NULL){
+            pthread_mutex_lock(&mutex_cola_exec);
+            pthread_mutex_lock(&mutex_cola_exit);
+            list_remove_element(ready_list, tcb_aux);
+            list_add(exit_queue, tcb_aux);
+            pthread_mutex_unlock(&mutex_cola_exec);
+            pthread_mutex_unlock(&mutex_cola_exit);
+        }
         // Verificar que exista el TID y obtener el TCB
         // Si existe, Agregar TCB a lista EXIT y avisar a memoria
         // send_tid_exit(pid, tid_to_end);
@@ -106,7 +112,6 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         break;
     case INSTRUCCION_MUTEX_CREATE:
         // crea un nuevo mutex para el proceso sin asignar a ningún hilo.
-        log_info(log, "INSTRUCCION_MUTEX_CREATE");
         char *recurso = buffer_read_string(buffer_response, srt_size);
         pid = buffer_read_uint32(buffer_response);
 
