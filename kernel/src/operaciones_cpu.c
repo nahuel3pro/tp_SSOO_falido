@@ -49,7 +49,10 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         if (tid == 0)
         {
             send_pid_exit(pid);
-            send_to_mem_process_kill(pid);
+            send_to_mem_process_kill(pid);            // se bloquea y espera la confirmación de memoria. Puede que haya que hacerlo
+            t_PCB process_to_free = get_process(pid); // en un hilo detach
+            free(process_to_free);
+            process_to_free = NULL;
         }
         break;
     case INSTRUCCION_THREAD_CREATE:
@@ -78,7 +81,7 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
             t_TCB thread_to_block = safe_tcb_remove(ready_list, &mutex_cola_ready);
             // list_add(blocked_queue, tcb)
             safe_tcb_add(blocked_queue, thread_to_block, &mutex_cola_block);
-            log_info(log, "## (<%d>:<%d>) - Bloqueado por: <PTHREAD_JOIN>", pid, tid); //log obligatorio.
+            log_info(log, "## (<%d>:<%d>) - Bloqueado por: <PTHREAD_JOIN>", pid, tid); // log obligatorio.
         }
         log_trace(log, "El hilo no existe");
         break;
@@ -91,7 +94,8 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         pid = buffer_read_uint32(buffer_response);
         tcb_aux = get_thread(pid, tid_to_end);
 
-        if(tcb_aux != NULL){
+        if (tcb_aux != NULL)
+        {
             pthread_mutex_lock(&mutex_cola_exec);
             pthread_mutex_lock(&mutex_cola_exit);
             list_remove_element(ready_list, tcb_aux);

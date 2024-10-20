@@ -31,9 +31,17 @@ void exit_tcb(void)
     while (1)
     {
         sem_wait(&sem_exit);
-        t_TCB tcb = safe_tcb_remove(exit_queue, &mutex_cola_exit);
+        t_TCB tcb_to_remove = safe_tcb_remove(exit_queue, &mutex_cola_exit);
+        // Fijarse si tenía un hilo esperándolo, y devolverlo a ready
+        if (tcb_to_remove->TID_wait > -1)
+        {
+            thread_back_to_ready(tcb_to_remove->PID, tcb_to_remove->TID_wait);
+        }
         // mandar a memoria TID a eliminar.
-        
+        send_to_mem_thread_kill(tcb_to_remove->PID, tcb_to_remove->TID_wait);
+
+        free(tcb_to_remove);
+        tcb_to_remove = NULL;
     }
 }
 
@@ -44,7 +52,7 @@ void ready_tcb(void) // Procesos de la cola NEW para mandarlos a READY
         sem_wait(&sem_new); // cola new
         t_PCB pcb = safe_pcb_remove(new_queue, &mutex_cola_listos_para_ready);
         t_TCB aux = list_get(pcb->TIDs, 0);
-        //sem_post(&sem_ready);
+        // sem_post(&sem_ready);
         process_create(aux->file_path, pcb->size, aux->priority);
     }
 }
@@ -133,6 +141,29 @@ void send_to_mem_process_kill(int pid)
     paquete_send->buffer = buffer_send;
     enviar_paquete(paquete_send, socket_cliente);
     eliminar_paquete(paquete_send);
+
+    uint8_t confirmation;
+    recv(socket_cliente, &confirmation, SIZEOF_UINT8, 0);
+    close(socket_cliente);
+}
+
+void send_to_mem_thread_kill(int PID, int TID)
+{
+    // Conectarse a memoria
+    int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
+    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
+
+    t_paquete *paquete_send = crear_paquete(PROCESS_KILL);
+    t_buffer *buffer_send = buffer_create(SIZEOF_UINT32);
+    buffer_add_uint32(buffer_send, (uint32_t)PID);
+    buffer_add_uint32(buffer_send, (uint32_t)TID);
+
+    buffer_send->offset = 0;
+
+    paquete_send->buffer = buffer_send;
+    enviar_paquete(paquete_send, socket_cliente);
+    eliminar_paquete(paquete_send);
+    close(socket_cliente);
 }
 
 void send_pid_exit(int PID)
@@ -140,7 +171,9 @@ void send_pid_exit(int PID)
     void exit_process(void *ptr)
     {
         t_TCB tcb_aux = (t_TCB)ptr;
-        //send_tid_exit(tcb_aux);
+        // sacarlos de la lista de ready y mandarlos a exit
+        sem_wait(&sem_exec);
+        list_remove_element(ready_list, tcb_aux);
         safe_tcb_add(exit_queue, tcb_aux, &mutex_cola_exit);
         sem_post(&sem_exit);
     }

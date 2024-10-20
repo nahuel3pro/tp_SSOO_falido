@@ -62,10 +62,10 @@ t_PCB get_process(int PID)
     // usar mutex acá
 
     pthread_mutex_lock(&mutex_cola_procesos);
-    t_TCB tcb_aux = list_find(process_list, process_contains);
+    t_PCB pcb = list_find(process_list, process_contains);
     pthread_mutex_unlock(&mutex_cola_procesos);
 
-    return tcb_aux;
+    return pcb;
 }
 
 t_TCB get_thread(int PID, int TID)
@@ -79,4 +79,14 @@ t_TCB get_thread(int PID, int TID)
     t_PCB aux_pcb = get_process(PID);
 
     return list_find(aux_pcb->TIDs, process_contains_TID);
+}
+
+void thread_back_to_ready(int PID, int TID){
+    t_TCB aux_tcb = get_thread(PID, TID);
+
+    pthread_mutex_lock(&mutex_cola_block);
+    list_remove_element(blocked_queue, aux_tcb);
+    pthread_mutex_unlock(&mutex_cola_block);
+
+    safe_tcb_add(ready_list, aux_tcb, &mutex_cola_ready);
 }
