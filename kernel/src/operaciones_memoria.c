@@ -42,24 +42,31 @@ void process_create(char *filename, int process_size, int main_thread_priority)
     if (res == SUCCESS)
     {
         // Enviar el proceso a la cola READY.
-        list_add(ready_list, main_thread);
+        // list_add(ready_list, main_thread);
+        safe_tcb_add(ready_list, main_thread, &mutex_cola_ready);
         // mutex process_list
+        // list_add(process_list, new_process);
+        pthread_mutex_lock(&mutex_cola_procesos);
         list_add(process_list, new_process);
+        pthread_mutex_unlock(&mutex_cola_procesos);
         // safe_tcb_add(process_list, main_thread);
         log_trace(log, "Proceso creado exitosamente y enviado a la cola READY!");
+        sem_post(&sem_ready);
     }
     else
     {
         // Se manda a la cola NEW para esperar a ser inicializado nuevamente.
-        queue_push(new_queue, new_process);
+        // queue_push(new_queue, new_process);
+        safe_pcb_add(new_queue, new_process, &mutex_cola_block);
         log_trace(log, "Proceso no pudo ser creado y se lo envió a la cola NEW");
+        sem_post(&sem_new);
     }
     close(socket_cliente);
 }
 
 void thread_create(int pid, int thread_priority, char *file_path)
 {
-    log_info(log, "Creando el hilo en <PID> : <%d>", pid);
+    log_info(log, "Creando el hilo en <PID> : <%d>", pid); // Log obligatorio
     // Se podría mandar el buffer directamente?
     t_paquete *paquete = crear_paquete(THREAD_CREATION);
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 * 3 + strlen(file_path) + 1);

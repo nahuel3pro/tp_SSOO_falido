@@ -33,7 +33,7 @@ void exit_tcb(void)
         sem_wait(&sem_exit);
         t_TCB tcb = safe_tcb_remove(exit_queue, &mutex_cola_exit);
         // mandar a memoria TID a eliminar.
-        free(tcb);
+        
     }
 }
 
@@ -41,10 +41,10 @@ void ready_tcb(void) // Procesos de la cola NEW para mandarlos a READY
 {
     while (1)
     {
-        sem_wait(&sem_listos_ready); // cola new
+        sem_wait(&sem_new); // cola new
         t_PCB pcb = safe_pcb_remove(new_queue, &mutex_cola_listos_para_ready);
         t_TCB aux = list_get(pcb->TIDs, 0);
-        sem_post(&sem_ready);
+        //sem_post(&sem_ready);
         process_create(aux->file_path, pcb->size, aux->priority);
     }
 }
@@ -53,8 +53,8 @@ void exec_tcb()
 {
     while (1)
     {
-        /*  sem_wait(&sem_ready);
-         sem_wait(&sem_exec); */
+        sem_wait(&sem_ready);
+        sem_wait(&sem_exec);
         log_trace(log, "Eligiendo TCB...");
         t_TCB tcb = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
@@ -105,7 +105,7 @@ t_TCB safe_tcb_remove(t_list *list, pthread_mutex_t *mutex)
 void safe_pcb_add(t_queue *queue, t_PCB pcb, pthread_mutex_t *mutex)
 {
     pthread_mutex_lock(mutex);
-    list_add(queue, pcb);
+    queue_push(queue, pcb);
     pthread_mutex_unlock(mutex);
 }
 
@@ -113,24 +113,12 @@ t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex)
 {
     t_PCB pcb;
     pthread_mutex_lock(mutex);
-    pcb = list_remove(queue, 0);
+    pcb = queue_pop(queue);
     pthread_mutex_unlock(mutex);
     return pcb;
 }
 
-void send_pcb_exit(int pid)
-{
-    // Buscar en cola de procesos y mandar a exit todos sus hilos
-    // t_PCB pcb_to_remove = remover_por_PID()
-
-    // Poner proceso en la lista de exit
-    // safe_pcb_add()
-
-    // Avisa a memoria y le envia el pid del proceso a eliminar
-    send_to_mem(pid);
-}
-
-void send_to_mem(int pid)
+void send_to_mem_process_kill(int pid)
 {
     // Conectarse a memoria
     int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
@@ -147,26 +135,6 @@ void send_to_mem(int pid)
     eliminar_paquete(paquete_send);
 }
 
-// Funciones para obtener o eliminar por pid de una lista (Revisar)
-t_PCB remover_por_PID(t_list *lista, uint32_t numero)
-{
-    bool equivaleAlPID(t_PCB proceso)
-    {
-        return numero == proceso->PID;
-    }
-    return list_remove_by_condition(lista, equivaleAlPID);
-}
-
-bool encontrarProceso(t_list *lista, uint32_t numero)
-{
-    bool equivaleAlPID(t_PCB proceso)
-    {
-        return numero == proceso->PID;
-    }
-    return list_any_satisfy(lista, equivaleAlPID);
-    // Buscar en cola de procesos y mandar a exit todos sus hilos
-}
-
 void send_pid_exit(int PID)
 {
     void exit_process(void *ptr)
@@ -179,6 +147,7 @@ void send_pid_exit(int PID)
     t_PCB pcb_to_remove = get_process(PID);
     list_iterate(pcb_to_remove->TIDs, exit_process);
 }
+
 void send_tid_exit()
 {
     t_TCB tcb_to_exit = safe_tcb_remove(ready_list, &mutex_cola_ready);

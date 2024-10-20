@@ -49,6 +49,7 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         if (tid == 0)
         {
             send_pid_exit(pid);
+            send_to_mem_process_kill(pid);
         }
         break;
     case INSTRUCCION_THREAD_CREATE:

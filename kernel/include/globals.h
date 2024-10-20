@@ -37,7 +37,7 @@ extern pthread_mutex_t mutex_cola_block;
 extern pthread_mutex_t mutex_cola_block_io;
 extern pthread_mutex_t mutex_cola_block_fs;
 extern sem_t sem_multiprog;
-extern sem_t sem_listos_ready;
+extern sem_t sem_new;
 extern sem_t sem_ready;
 extern sem_t sem_exec;
 extern sem_t sem_exit;

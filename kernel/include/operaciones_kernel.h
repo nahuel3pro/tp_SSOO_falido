@@ -44,7 +44,7 @@ void thread_cancel(int tid);
 // Mutex
 void safe_pcb_add(t_queue *queue, t_PCB pcb, pthread_mutex_t *mutex);
 t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex);
-void safe_tcb_add(t_list *list, t_TCB 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bltcb, pthread_mutex_t *mutex);
+void safe_tcb_add(t_list *list, t_TCB tcb, pthread_mutex_t *mutex);
 t_TCB safe_tcb_remove(t_list *list, pthread_mutex_t *mutex);
 void mutex_create(int pid, char *mutex_name);
 void mutex_lock(int tid, char *mutex_name);
@@ -62,13 +62,10 @@ int mutex_is_available(char *mutex_name, t_PCB process);
 void init_mutexes();
 void unlock_mutex(char *mutex_name);
 
-void send_pid_exit(int pid);
 void send_tid_exit();
 void mutex_create(int pid, char* recurso);
 
-void send_pcb_exit(int pid);
-void send_to_mem(int pid);
+void send_pid_exit(int PID);
+void send_to_mem_process_kill(int pid);
 
-t_PCB remover_por_PID(t_list* lista, uint32_t numero);
-bool encontrarProceso(t_list* lista, uint32_t numero);
 #endif // H_OPERACIONES_KERNEL_H
