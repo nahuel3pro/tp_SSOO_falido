@@ -32,7 +32,6 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
         // esta syscall recibirá 3 parámetros de la CPU, el primero será el nombre del archivo de pseudocódigo que deberá ejecutar el proceso,
         // el segundo parámetro es el tamaño del proceso en Memoria y el tercer parámetro es la prioridad del hilo main (TID 0).
         // El Kernel creará un nuevo PCB y un TCB asociado con TID 0 y lo dejará en estado NEW.
-        int srt_size;
         path_to_psdc = buffer_read_string(buffer_response, srt_size);
         int process_size = buffer_read_uint32(buffer_response);
         priority = buffer_read_uint32(buffer_response);

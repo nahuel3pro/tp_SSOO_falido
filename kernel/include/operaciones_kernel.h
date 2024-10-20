@@ -24,8 +24,8 @@ t_list *recibir_instrucciones(char *file_name);
 void liberar_instrucciones(t_list *lista);
 
 // Planificadores (a chequear)
-void short_term_scheduler();
-void long_term_scheduler();
+void planificar_largo_plazo(void);
+void planificar_corto_plazo(void);
 t_TCB safe_tcb_remove(t_list *list, pthread_mutex_t *mutex);
 t_TCB elegir_tcb_segun_algoritmo();
 void exec_tcb();
@@ -67,5 +67,6 @@ void mutex_create(int pid, char* recurso);
 
 void send_pid_exit(int PID);
 void send_to_mem_process_kill(int pid);
+void send_to_mem_thread_kill(int PID, int TID);
 
 #endif // H_OPERACIONES_KERNEL_H

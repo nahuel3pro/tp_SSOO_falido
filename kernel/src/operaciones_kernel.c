@@ -2,24 +2,23 @@
 
 bool _has_less_priority(void *a, void *b)
 {
-    t_TCB thread_a = (t_TCB *)a;
-    t_TCB thread_b = (t_TCB *)b;
+    t_TCB thread_a = (t_TCB )a;
+    t_TCB thread_b = (t_TCB )b;
 
     return thread_a->priority < thread_b->priority;
 }
 
-void planificar_corto_plazo()
+void planificar_corto_plazo(void)
 {
     pthread_t hilo_corto_plazo;
     pthread_create(&hilo_corto_plazo, NULL, (void *)exec_tcb, NULL);
     pthread_detach(hilo_corto_plazo);
 }
 
-void planificar_largo_plazo()
+void planificar_largo_plazo(void)
 {
     pthread_t hilo_ready;
     pthread_t hilo_exit;
-    pthread_t hilo_block;
     pthread_create(&hilo_ready, NULL, (void *)ready_tcb, NULL);
     pthread_create(&hilo_exit, NULL, (void *)exit_tcb, NULL);
     pthread_detach(hilo_exit);
@@ -92,6 +91,7 @@ t_TCB elegir_tcb_segun_algoritmo()
         log_error(log, "No se reconoció el algoritmo de planifación");
         abort();
     }
+    return NULL;
 }
 
 void safe_tcb_add(t_list *list, t_TCB tcb, pthread_mutex_t *mutex)
