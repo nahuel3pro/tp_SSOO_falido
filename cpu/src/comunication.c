@@ -2,7 +2,7 @@
 
 void get_context(uint32_t PID, uint32_t TID, t_register *registro, int socket_connection)
 {
-
+    log_info(log, "## TID: <%d> - Solicito Contexto Ejecución", TID); // Log obligatorio
     // comunicándose con memoria - Te pido el contexto de ejecución.
     // cpu manda el pid del proceso, así memoria lo busca y pasa el contexto de ejecución.
     // Mando(serializar) TID y PID

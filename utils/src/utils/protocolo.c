@@ -9,7 +9,7 @@ bool send_handshake(t_log *logger, int fd_connection, const char *connection_nam
 
     if (result == 1)
     {
-        log_info(logger, "Handshake OK de %s, bienvenido", connection_name);
+        log_trace(logger, "Handshake OK de %s, bienvenido", connection_name);
         return true;
     }
     else
@@ -32,12 +32,12 @@ bool recv_handshake(t_log *log, int server_fd)
     if (handshake == 1)
     {
         bytes = send(server_fd, &resultOk, sizeof(int32_t), 0);
-        log_info(log, "Buenas tardes, caballero.");
+        log_trace(log, "Buenas tardes, caballero.");
     }
     else
     {
         bytes = send(server_fd, &resultError, sizeof(int32_t), 0);
-        log_info(log, "Che, se quiso meter un desconocido.");
+        log_trace(log, "Che, se quiso meter un desconocido.");
     }
     return true;
 }

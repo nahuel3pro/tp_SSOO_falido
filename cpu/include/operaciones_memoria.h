@@ -9,4 +9,5 @@ char *recv_instruction(int socket, uint32_t PID, uint32_t TID, uint32_t PC);
 
 char *fetch(int socket_cliente, t_register *registro, uint32_t PID, uint32_t TID);
 void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint32_t TID);
+void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid);
 #endif

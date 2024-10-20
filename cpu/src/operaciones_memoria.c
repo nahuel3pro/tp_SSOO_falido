@@ -3,6 +3,7 @@
 // Recive el pedido de instrucción hecho anteriormente.
 char *recv_instruction(int socket_cliente, uint32_t PID, uint32_t TID, uint32_t PC)
 {
+    log_info(log, "## TID: <%d> - FETCH - Program Counter: <%d>", TID, PC); // Log obligatorio
     // Mando(serializar) TID, PID y PC
     t_paquete *paquete_send_inst = crear_paquete(GET_INSTRUCTION);
     t_buffer *buffer_send_inst = buffer_create(SIZEOF_UINT32 * 3);
@@ -20,7 +21,6 @@ char *recv_instruction(int socket_cliente, uint32_t PID, uint32_t TID, uint32_t 
     // Se recibe el contexto de ejecución.
     uint32_t str_size;
     char *inst = buffer_read_string(buffer_r, &str_size);
-    log_trace(log, "Instrucción recibida: %s", inst);
 
     buffer_destroy(buffer_r);
     return inst;
@@ -45,12 +45,12 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
     switch (dic_instruction)
     {
     case INSTRUCCION_SET:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
         set_registro(registro, array[1], atoi(array[2]));
         break;
 
     case INSTRUCCION_READ_MEM:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
 
         valor1 = obtener_registro(array[2], registro);
 
@@ -62,7 +62,7 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_SUM:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
 
         valor1 = obtener_registro(array[1], registro);
         valor2 = obtener_registro(array[2], registro);
@@ -71,7 +71,7 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_SUB:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %s>", TID, array[0], array[1], array[2]);
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %s>", TID, array[0], array[1], array[2]);
 
         valor1 = obtener_registro(array[1], registro);
         valor2 = obtener_registro(array[2], registro);
@@ -80,7 +80,7 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_JNZ:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s, %d>", TID, array[0], array[1], atoi(array[2]));
 
         valor1 = obtener_registro(array[1], registro);
 
@@ -92,7 +92,7 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         break;
 
     case INSTRUCCION_LOG:
-        log_trace(log, "## TID: <%d> - Ejecutando: <%s> - <%s>", TID, array[0], array[1]);
+        log_info(log, "## TID: <%d> - Ejecutando: <%s> - <%s>", TID, array[0], array[1]);
 
         valor1 = obtener_registro(array[1], registro);
         log_info(log, valor1);
@@ -131,4 +131,29 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
     }
     registro->PC++;
     dictionary_destroy(dic);
+}
+
+void update_context(int fd, t_register registro, uint32_t pid, uint32_t tid)
+{
+    log_info(log, "## TID: <%d> - Actualizo Contexto Ejecución", tid); // Log obligatorio
+    t_paquete *paquete = crear_paquete(UPDATE_CONTEXT);
+    t_buffer *buffer = buffer_create(SIZEOF_UINT32 * 2 + sizeof(t_register));
+
+    buffer_add_uint32(buffer, pid);
+    buffer_add_uint32(buffer, tid);
+    serializar_registro(buffer, registro);
+    buffer->offset = 0;
+    paquete->buffer = buffer;
+
+    enviar_paquete(paquete, fd);
+    eliminar_paquete(paquete);
+
+    uint8_t resultado = 0;
+    recv(fd, &resultado, SIZEOF_UINT8, 0);
+
+    if (resultado != SUCCESS)
+    {
+        log_error(log, "Error al actualizar el contexto");
+        abort();
+    }
 }
