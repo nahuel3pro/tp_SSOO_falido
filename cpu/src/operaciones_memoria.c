@@ -34,7 +34,7 @@ char *fetch(int socket_cliente, t_register *registro, uint32_t PID, uint32_t TID
     return recv_instruction(socket_cliente, PID, TID, registro->PC);
 }
 
-void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint32_t TID)
+void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint32_t TID, int client_dispatch_fd)
 {
 
     char **array = string_split(instruction, " ");
@@ -98,33 +98,34 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
         log_info(log, valor1);
         break;
 
-    // ----- SYSCALLS -----
+    // ----- SYSCALLS ----- MANDAR MOTIVO A KERNEL
     case INSTRUCCION_DUMP_MEMORY:
-        log_info(log, "DUMP MEMORY");
+        log_trace(log, "DUMP MEMORY FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_MUTEX_CREATE:
-        log_info(log, "MUTEX_CREATE");
+        log_trace(log, "MUTEX_CREATE FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_MUTEX_UNLOCK:
-        log_info(log, "INSTRUCCION_MUTEX_UNLOCK");
+        log_trace(log, "INSTRUCCION_MUTEX_UNLOCK FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_PROCESS_EXIT:
-        log_info(log, "INSTRUCCION_PROCESS_EXIT");
+        log_trace(log, "INSTRUCCION_PROCESS_EXIT FALTA IMPLEMENTAR");
+
         break;
     case INSTRUCCION_PROCESS_CREATE:
-        log_info(log, "INSTRUCCION_PROCESS_CREATE");
+        log_trace(log, "INSTRUCCION_PROCESS_CREATE FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_THREAD_CANCEL:
-        log_info(log, "INSTRUCCION_THREAD_CANCEL");
+        log_trace(log, "INSTRUCCION_THREAD_CANCEL FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_THREAD_CREATE:
-        log_info(log, "INSTRUCCION_THREAD_CREATE");
+        log_trace(log, "INSTRUCCION_THREAD_CREATE FALTA IMPLEMENTAR");
         break;
     case INSTRUCCION_THREAD_EXIT:
-        log_info(log, "INSTRUCCION_THREAD_EXIT");
+        send_syscall(array[0], 1, client_dispatch_fd);
         break;
     case INSTRUCCION_THREAD_JOIN:
-        log_info(log, "INSTRUCCION_THREAD_JOIN");
+        log_trace(log, "INSTRUCCION_THREAD_JOIN FALTA IMPLEMENTAR");
         break;
     default:
         break;

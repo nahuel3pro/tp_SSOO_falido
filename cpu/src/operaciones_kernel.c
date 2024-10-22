@@ -66,16 +66,16 @@ void dispatch(int client_dispatch_fd)
     while (check_interrupt())
     {
         instruccion = fetch(memoria_fd, &registro, pid, tid);
-        decode_execute(instruccion, &registro, pid, tid);
+        decode_execute(instruccion, &registro, pid, tid, client_dispatch_fd);
         update_context(memoria_fd, registro, pid, tid);
     }
 }
 
 bool check_interrupt()
 {
-    sem_wait(&interrupt);
+    pthread_mutex_lock(&mutex_interrupt_signal);
     bool aux = flag_interrupt;
-    sem_post(&interrupt);
+    pthread_mutex_unlock(&mutex_interrupt_signal);
 
     return aux;
 }
@@ -88,7 +88,57 @@ void atender_interrupt(void)
     server_dispatch_fd = iniciar_servidor(log, config_get_string_value(config, "PUERTO_ESCUCHA_INTERRUPT"));
     client_dispatch_fd = esperar_cliente(log, server_dispatch_fd);
     log_info(log, "## Llega interrupción al puerto Interrupt"); // Log obligatorio
-    sem_wait(&interrupt);
+    pthread_mutex_lock(&mutex_interrupt_signal);
     flag_interrupt = false;
-    sem_post(&interrupt);
+    pthread_mutex_unlock(&mutex_interrupt_signal);
+}
+
+void send_syscall(const char *instruction, int param_count, int client_dispatch_fd, ...)
+{
+    va_list args;
+    va_start(args, instruction);
+    t_buffer *buffer;
+    char *arg1;
+    char *arg2;
+    char *arg3;
+
+    int str_zise = strlen(instruction);
+    switch (param_count)
+    {
+    case 1:
+        buffer = buffer_create(SIZEOF_UINT32 + str_zise + 1);
+        buffer_add_string(buffer, instruction);
+        break;
+    case 2:
+        arg1 = va_arg(args, char *);
+        buffer = buffer_create(SIZEOF_UINT32 * 2 + strlen(arg1) + str_zise + 2);
+        buffer_add_string(buffer, instruction);
+        buffer_add_string(buffer, arg1);
+        break;
+    case 3:
+        arg1 = va_arg(args, char *);
+        arg2 = va_arg(args, char *);
+        buffer = buffer_create(SIZEOF_UINT32 * 3 + strlen(arg1) + strlen(arg2) + str_zise + 3);
+        buffer_add_string(buffer, instruction);
+        buffer_add_string(buffer, arg1);
+        buffer_add_string(buffer, arg2);
+        break;
+    case 4:
+        arg1 = va_arg(args, char *);
+        arg2 = va_arg(args, char *);
+        arg3 = va_arg(args, char *);
+        buffer = buffer_create(SIZEOF_UINT32 * 4 + strlen(arg1) + strlen(arg2) + strlen(arg3) + str_zise + 4);
+        buffer_add_string(buffer, instruction);
+        buffer_add_string(buffer, arg1);
+        buffer_add_string(buffer, arg2);
+        buffer_add_string(buffer, arg3);
+        break;
+    default:
+        log_error(log, "Te pasaste de parámetros");
+        abort();
+    }
+    buffer->offset = 0;
+
+    enviar_buffer(buffer, client_dispatch_fd);
+    readline("> pausa para ver qué pasa en kernel");
 }

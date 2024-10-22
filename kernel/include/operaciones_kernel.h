@@ -40,7 +40,6 @@ void process_exit(int pid);
 //void thread_create(int pid, int priority, char *file_path);
 void thread_exit(int tid);
 void thread_join(int tid_to_wait);
-void thread_cancel(int tid);
 // Mutex
 void safe_pcb_add(t_queue *queue, t_PCB pcb, pthread_mutex_t *mutex);
 t_PCB safe_pcb_remove(t_queue *queue, pthread_mutex_t *mutex);
@@ -62,7 +61,7 @@ int mutex_is_available(char *mutex_name, t_PCB process);
 void init_mutexes();
 void unlock_mutex(char *mutex_name);
 
-void send_tid_exit();
+void send_tcb_exit(t_TCB tcb_to_exit);
 void mutex_create(int pid, char* recurso);
 
 void send_pid_exit(int PID);

@@ -16,7 +16,7 @@ void dispatch(t_TCB tcb, int fd)
     eliminar_paquete(paquete_send);
 }
 
-void atender_motivo(char *motivo, t_buffer *buffer_response)
+void atender_motivo(char *motivo, t_buffer *buffer_response, t_TCB tcb_exec) // SYSCALLS
 {
     t_dictionary *dic = dict_protocol();
     int instruccion = (int)dictionary_get(dic, motivo);
@@ -102,17 +102,11 @@ void atender_motivo(char *motivo, t_buffer *buffer_response)
             pthread_mutex_unlock(&mutex_cola_ready);
             pthread_mutex_unlock(&mutex_cola_exit);
         }
-        // Verificar que exista el TID y obtener el TCB
-        // Si existe, Agregar TCB a lista EXIT y avisar a memoria
-        // send_tid_exit(pid, tid_to_end);
         break;
     case INSTRUCCION_THREAD_EXIT:
         //  esta syscall finaliza al hilo que lo invocó, pasando el mismo al estado EXIT.
         //  Se deberá indicar a la Memoria la finalización de dicho hilo.
-        pid = buffer_read_uint32(buffer_response);
-        tid = buffer_read_uint32(buffer_response);
-        log_info(log, "## (<%d>:<%d>) Finaliza el hilo", pid, tid);
-        send_tid_exit();
+        send_tcb_exit(tcb_exec);
         break;
     case INSTRUCCION_MUTEX_CREATE:
         // crea un nuevo mutex para el proceso sin asignar a ningún hilo.

@@ -132,7 +132,6 @@ t_PCB get_process(int PID)
         t_PCB aux_pcb = (t_PCB)ptr;
         return aux_pcb->PID == PID;
     }
-    // usar mutex acá
     pthread_mutex_lock(&mutex_process_list);
     t_TCB aux_tcb = list_find(process_list, process_contains);
     pthread_mutex_unlock(&mutex_process_list);
@@ -150,4 +149,18 @@ t_TCB get_thread(int PID, int TID)
     t_PCB aux_pcb = get_process(PID);
 
     return list_find(aux_pcb->TIDs, process_contains_TID);
+}
+
+t_TCB take_thread(int PID, int TID)
+{
+    t_PCB aux_pcb = get_process(PID);
+    t_TCB aux_tcb =  get_thread(PID, TID);
+    list_remove_element(aux_pcb->TIDs, aux_tcb);
+    return aux_tcb;
+}
+
+free_tcb(t_TCB tcb_to_kill){
+    list_destroy(tcb_to_kill->instructions);
+    free(tcb_to_kill);
+    tcb_to_kill = NULL;
 }

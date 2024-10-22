@@ -6,6 +6,8 @@
 
 void process_create(char *filename, int process_size, int thread_priority);
 void thread_create(int pid, int thread_priority, char *file_path);
+void thread_cancel(int PID, int TID);
+int connect_to_memory();
 
 
 #endif

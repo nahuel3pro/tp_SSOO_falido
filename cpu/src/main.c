@@ -3,7 +3,7 @@
 t_config *config = NULL;
 t_log *log = NULL;
 bool flag_interrupt;
-sem_t interrupt;
+pthread_mutex_t mutex_interrupt_signal;
 
 int main(int argc, char *argv[])
 {
@@ -19,5 +19,5 @@ void inicializar_variables()
     log = levantar_log(getcwd(NULL, 0), "cpu", config_get_string_value(config, "LOG_LEVEL"));
 
     flag_interrupt = true;
-    sem_init(&interrupt, 0, 1);
+   pthread_mutex_init(&mutex_interrupt_signal, NULL);
 }

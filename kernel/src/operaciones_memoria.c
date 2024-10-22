@@ -19,8 +19,11 @@ void process_create(char *filename, int process_size, int main_thread_priority)
     // avisarle a memoria y esperar confirmación.
     // mandar PID, process_size y file_name
     // Conectarse a memoria
-    int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
+    int socket_cliente = 0;
+    if((socket_cliente = connect_to_memory()) <-1){
+        log_error(log, "Fallo al conectar el kernel con memoria al crear proceso");
+        abort();
+    }
 
     t_paquete *paquete_send = crear_paquete(PROCESS_CREATION);
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 * 4 + strlen(filename) + 1);
@@ -67,7 +70,6 @@ void process_create(char *filename, int process_size, int main_thread_priority)
 void thread_create(int pid, int thread_priority, char *file_path)
 {
     log_info(log, "Creando el hilo en <PID> : <%d>", pid); // Log obligatorio
-    // Se podría mandar el buffer directamente?
     t_paquete *paquete = crear_paquete(THREAD_CREATION);
     t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 * 3 + strlen(file_path) + 1);
     buffer_add_uint32(buffer_send, pid);
@@ -76,9 +78,8 @@ void thread_create(int pid, int thread_priority, char *file_path)
     buffer_send->offset = 0;
     paquete->buffer = buffer_send;
 
-    // Creando conexión con memoria
-    int socket_mem = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-    if (send_handshake(log, socket_mem, "KERNEL/MEMORIA", KERNEL))
+    int socket_mem = 0;
+    if ((socket_mem = connect_to_memory()) > -1)
     {
         enviar_paquete(paquete, socket_mem);
         t_TCB new_thread = malloc(sizeof(*new_thread));
@@ -93,4 +94,36 @@ void thread_create(int pid, int thread_priority, char *file_path)
 
     eliminar_paquete(paquete);
     close(socket_mem);
+}
+
+void thread_cancel(int PID, int TID)
+{
+    t_paquete *paquete = crear_paquete(THREAD_KILL);
+    t_buffer *buffer_send = buffer_create(SIZEOF_UINT32 * 2);
+    buffer_add_uint32(buffer_send, PID);
+    buffer_add_uint32(buffer_send, TID);
+
+    buffer_send->offset = 0;
+    paquete->buffer = buffer_send;
+
+    int socket_mem = 0;
+    if ((socket_mem = connect_to_memory()) > -1)
+    {
+        enviar_paquete(paquete, socket_mem);
+    }
+}
+
+int connect_to_memory()
+{
+    // Creando conexión con memoria
+    int socket_mem = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
+    if (send_handshake(log, socket_mem, "KERNEL/MEMORIA", KERNEL))
+    {
+        return socket_mem;
+    }
+    else
+    {
+        log_error(log, "Error al mandar el handshake en thread_create");
+        return -1;
+    }
 }

@@ -2,8 +2,8 @@
 
 bool _has_less_priority(void *a, void *b)
 {
-    t_TCB thread_a = (t_TCB )a;
-    t_TCB thread_b = (t_TCB )b;
+    t_TCB thread_a = (t_TCB)a;
+    t_TCB thread_b = (t_TCB)b;
 
     return thread_a->priority < thread_b->priority;
 }
@@ -37,7 +37,7 @@ void exit_tcb(void)
             thread_back_to_ready(tcb_to_remove->PID, tcb_to_remove->TID_wait);
         }
         // mandar a memoria TID a eliminar.
-        send_to_mem_thread_kill(tcb_to_remove->PID, tcb_to_remove->TID_wait);
+        thread_cancel(tcb_to_remove->PID, tcb_to_remove->TID);
 
         free(tcb_to_remove);
         tcb_to_remove = NULL;
@@ -58,20 +58,21 @@ void ready_tcb(void) // Procesos de la cola NEW para mandarlos a READY
 
 void exec_tcb()
 {
-    int fd = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
+    int fd_dispatch = crear_conexion(config_get_string_value(config, "IP_CPU"), config_get_string_value(config, "PUERTO_CPU_DISPATCH"));
     while (1)
     {
         sem_wait(&sem_ready);
         sem_wait(&sem_exec);
         log_trace(log, "Eligiendo TCB...");
-        t_TCB tcb = elegir_tcb_segun_algoritmo();
+        t_TCB tcb_exec = elegir_tcb_segun_algoritmo();
         // MANDAR A CPU EL TCB A EJECUTAR.
-        dispatch(tcb, fd);
+        dispatch(tcb_exec, fd_dispatch);
+        //sem_post(&sem_ready);
         t_buffer *buffer_response = malloc(sizeof(t_buffer));
-        buffer_recv(fd, buffer_response);
-        int str_size;
-        char *motivo = buffer_read_string(buffer_response, str_size);
-        atender_motivo(motivo, buffer_response);
+        buffer_recv(fd_dispatch, buffer_response);
+        uint32_t str_size;
+        char *motivo = buffer_read_string(buffer_response, &str_size);
+        atender_motivo(motivo, buffer_response, tcb_exec);
     }
 }
 
@@ -147,25 +148,6 @@ void send_to_mem_process_kill(int pid)
     close(socket_cliente);
 }
 
-void send_to_mem_thread_kill(int PID, int TID)
-{
-    // Conectarse a memoria
-    int socket_cliente = crear_conexion(config_get_string_value(config, "IP_MEMORIA"), config_get_string_value(config, "PUERTO_MEMORIA"));
-    send_handshake(log, socket_cliente, "Kernel/Memoria", KERNEL);
-
-    t_paquete *paquete_send = crear_paquete(PROCESS_KILL);
-    t_buffer *buffer_send = buffer_create(SIZEOF_UINT32);
-    buffer_add_uint32(buffer_send, (uint32_t)PID);
-    buffer_add_uint32(buffer_send, (uint32_t)TID);
-
-    buffer_send->offset = 0;
-
-    paquete_send->buffer = buffer_send;
-    enviar_paquete(paquete_send, socket_cliente);
-    eliminar_paquete(paquete_send);
-    close(socket_cliente);
-}
-
 void send_pid_exit(int PID)
 {
     void exit_process(void *ptr)
@@ -181,14 +163,15 @@ void send_pid_exit(int PID)
     list_iterate(pcb_to_remove->TIDs, exit_process);
 }
 
-void send_tid_exit()
+void send_tcb_exit(t_TCB tcb_to_exit)
 {
-    t_TCB tcb_to_exit = safe_tcb_remove(ready_list, &mutex_cola_ready);
+    //t_TCB tcb_to_exit = safe_tcb_remove(ready_list, &mutex_cola_ready);
     safe_tcb_add(exit_queue, tcb_to_exit, &mutex_cola_exit);
     sem_post(&sem_exit);
+    log_info(log, "## (<%d>:<%d>) Finaliza el hilo", tcb_to_exit->PID, tcb_to_exit->TID); // Log obligatorio
 }
 
 void mutex_create(int pid, char *mutex_name)
 {
-    log_info(log, "Creando mutex en proceso: %d y con nombre %s", pid, mutex_name);
+    log_info(log, "Creando mutex en proceso: %d y con nombre %s", pid, mutex_name); // Lob obligatorio
 }

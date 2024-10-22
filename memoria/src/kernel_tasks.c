@@ -25,6 +25,10 @@ void atenderKernel(void *void_args)
         log_info(log, "Creando thread...");
         thread_create(*socket_kernel_mem);
         break;
+    case THREAD_KILL:
+        log_trace(log, "Matando un hilo...");
+        thread_cancel(*socket_kernel_mem);
+        break;
     case MEMORY_DUMP:
         log_info(log, "Dumpeando...");
         send(*socket_kernel_mem, &res, SIZEOF_UINT8, 0);
@@ -86,4 +90,21 @@ void thread_create(int socket_kernel_mem)
     thread_initiate(file_path, thread_priority, pcb_aux->PID, thread_qnty);
     list_add(pcb_aux->TIDs, new_thread);
     log_info(log, "## Hilo <Creado> - (PID:TID) - (<%d>:<%d>)", PID, thread_qnty); // Log obligatorio
+}
+
+void thread_cancel(int socket_kernel_mem){
+    t_paquete *paquete = malloc(sizeof(t_paquete));
+    crear_buffer(paquete);
+
+    recv(socket_kernel_mem, &(paquete->buffer->size), SIZEOF_UINT32, 0);
+    paquete->buffer->stream = malloc(paquete->buffer->size);
+    recv(socket_kernel_mem, paquete->buffer->stream, paquete->buffer->size, 0);
+
+    uint32_t PID = buffer_read_uint32(paquete->buffer);
+    uint32_t TID = buffer_read_uint32(paquete->buffer);
+    eliminar_paquete(paquete);
+
+    t_TCB tcb_to_kill = take_thread(PID, TID);
+    
+    free_tcb(tcb_to_kill);
 }

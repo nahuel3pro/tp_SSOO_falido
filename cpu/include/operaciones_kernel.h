@@ -9,7 +9,7 @@
 void atenderKernel();
 void atenter_dispatch(void);
 void dispatch(int client_dispatch_fd);
-
+void send_syscall(const char *instruction, int param_count, int client_dispatch_fd, ...);
 
 void atender_interrupt(void);
 bool check_interrupt();
