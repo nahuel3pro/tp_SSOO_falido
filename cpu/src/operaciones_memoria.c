@@ -100,32 +100,32 @@ void decode_execute(char *instruction, t_register *registro, uint32_t PID, uint3
 
     // ----- SYSCALLS ----- MANDAR MOTIVO A KERNEL
     case INSTRUCCION_DUMP_MEMORY:
-        log_trace(log, "DUMP MEMORY FALTA IMPLEMENTAR");
+        send_syscall(array[0], "DUMP_MEMORY", client_dispatch_fd); // No requiere parámetros adicionales
         break;
     case INSTRUCCION_MUTEX_CREATE:
-        log_trace(log, "MUTEX_CREATE FALTA IMPLEMENTAR");
+        send_syscall(array[0], "MUTEX_CREATE", client_dispatch_fd, recurso1); // Crear el mutex del recurso1
         break;
+
     case INSTRUCCION_MUTEX_UNLOCK:
-        log_trace(log, "INSTRUCCION_MUTEX_UNLOCK FALTA IMPLEMENTAR");
+         send_syscall(array[0], "MUTEX_UNLOCK", client_dispatch_fd, recurso1); // Liberar el mutex del recurso1
         break;
     case INSTRUCCION_PROCESS_EXIT:
-        log_trace(log, "INSTRUCCION_PROCESS_EXIT FALTA IMPLEMENTAR");
-
+        send_syscall(array[0], "PROCESS_EXIT", client_dispatch_fd); // No necesita parámetros adicionales
         break;
     case INSTRUCCION_PROCESS_CREATE:
-        log_trace(log, "INSTRUCCION_PROCESS_CREATE FALTA IMPLEMENTAR");
+        send_syscall(array[0], "PROCESS_CREATE", client_dispatch_fd, "proceso1", 256, 1); // Nombre del proceso (proceso1), tamaño de memoria (256), prioridad (1)
         break;
     case INSTRUCCION_THREAD_CANCEL:
-        log_trace(log, "INSTRUCCION_THREAD_CANCEL FALTA IMPLEMENTAR");
+        send_syscall(array[0], "THREAD_CANCEL", client_dispatch_fd, array[1]); // array[1] contiene el TID (en este caso 1)
         break;
     case INSTRUCCION_THREAD_CREATE:
-        log_trace(log, "INSTRUCCION_THREAD_CREATE FALTA IMPLEMENTAR");
+        send_syscall(array[0], "THREAD_CREATE", client_dispatch_fd, "hilo1", 3); // Nombre del hilo (hilo1), prioridad (3)
         break;
     case INSTRUCCION_THREAD_EXIT:
         send_syscall(array[0], 1, client_dispatch_fd);
         break;
     case INSTRUCCION_THREAD_JOIN:
-        log_trace(log, "INSTRUCCION_THREAD_JOIN FALTA IMPLEMENTAR");
+        send_syscall(array[0], "THREAD_JOIN", client_dispatch_fd, array[1]); // array[1] contiene el TID (en este caso 1)
         break;
     default:
         break;
