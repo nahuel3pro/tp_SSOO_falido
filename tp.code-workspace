@@ -26,7 +26,17 @@
     "files.associations": {
       "*.h": "c",
       "functional": "c",
-      "cmath": "c"
+      "cmath": "c",
+      "*.tcc": "c",
+      "memory_resource": "c",
+      "memory": "c",
+      "ostream": "c",
+      "streambuf": "c",
+      "array": "c",
+      "string_view": "c",
+      "initializer_list": "c",
+      "utility": "c",
+      "system_error": "c"
     },
     "C_Cpp.errorSquiggles": "disabled"
   }

@@ -7,5 +7,8 @@
 #include <readline/readline.h>
 
 void atenderKernel(void *void_args);
+void process_create(int socket_kernel_mem);
+void thread_create(int socket_kernel_mem);
+void thread_cancel(int socket_kernel_mem);
 
 #endif
